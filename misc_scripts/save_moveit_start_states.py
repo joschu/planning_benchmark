@@ -130,6 +130,7 @@ d["default_joint_values"] = default_joint_values
 d["default_base_pose"] = default_base_pose
 d["active_joints"] = active_joint_names
 d["active_affine"] = active_affine
+d["group_name"] = group_name
 
 
 import yaml

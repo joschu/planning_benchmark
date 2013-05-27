@@ -26,8 +26,9 @@ args = parser.parse_args()
 if args.outfile is None: args.outfile = sys.stdout
 
 import yaml, openravepy, trajoptpy
+import os
 import os.path as osp
-import planning_benchmark_common as pbc
+sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_common as pbc
 from trajoptpy.check_traj import traj_is_safe, traj_collisions
 from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros
 import trajoptpy.math_utils as mu
@@ -244,25 +245,30 @@ def main():
     results = []
 
     robot.SetActiveDOFs(active_joint_inds, problemset["active_affine"])
-    
-    
+
+    problem_joints = []
     for prob in problemset["problems"]:
-        
-        if "active_dof_values" in prob["start"]:
-            robot.SetActiveDOFValues(prob["start"]["active_dof_values"])
-        else: raise NotImplementedError
-        if "active_dof_values" in prob["goal"]:
-            joint_target = prob["goal"]["active_dof_values"]            
-            success, t_total, traj = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], joint_target)
-        else: raise NotImplementedError
-        
-        
+        # special "all_pairs" problem type
+        if "all_pairs" in prob:
+          states = prob["all_pairs"]["active_dof_values"]
+          for i in range(len(states)):
+            for j in range(i+1, len(states)):
+              problem_joints.append((states[i], states[j]))
+          continue
+
+        if "active_dof_values" not in prob["start"] or "active_dof_values" not in prob["goal"]:
+          raise NotImplementedError
+        problem_joints.append((prob["start"]["active_dof_values"], prob["goal"]["active_dof_values"]))
+
+    for start, goal in problem_joints:
+        robot.SetActiveDOFValues(start)
+        success, t_total, traj = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal)
         results.append(
             {"success": success,
              "time": t_total,
              #"traj": traj
              })
-        
+
     print "success rate: %i/%i"%(np.sum(result["success"] for result in results), len(results))
     yaml.dump(results, args.outfile)
         
