@@ -1,0 +1,193 @@
+active_affine: 0
+active_joints: [r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint,
+  r_elbow_flex_joint, r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint]
+default_base_pose: [0.03074371707199644, -0.0, -0.0, -0.9995273002077517, 1.0746809244155884,
+  1.500715732574463, 0.0]
+default_joint_values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.16825, 0.0, 0.0, 0.0, -0.8451866735633127, 0.08128204585620136, -1.8311522093787793,
+  -1.5550420276338315, 2.6911049983477024, -0.8325789594278508, 2.067980015738538,
+  2.248201624865942e-15, 0.0, 0.0, 0.0, 0.0, 0.0, -1.1102230246251565e-16, 1.5301977050596074,
+  -0.1606585554274158, 1.122, -2.1212501013292435, 2.5303972717977263, -0.7028113314291433,
+  1.925250846169634, -7.494005416219807e-15, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+env_file: countertop.env.xml
+joint_names: [fl_caster_rotation_joint, fl_caster_l_wheel_joint, fl_caster_r_wheel_joint,
+  fr_caster_rotation_joint, fr_caster_l_wheel_joint, fr_caster_r_wheel_joint, bl_caster_rotation_joint,
+  bl_caster_l_wheel_joint, bl_caster_r_wheel_joint, br_caster_rotation_joint, br_caster_l_wheel_joint,
+  br_caster_r_wheel_joint, torso_lift_joint, head_pan_joint, head_tilt_joint, laser_tilt_mount_joint,
+  r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint,
+  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint, r_gripper_motor_slider_joint,
+  r_gripper_motor_screw_joint, r_gripper_l_finger_joint, r_gripper_l_finger_tip_joint,
+  r_gripper_r_finger_joint, r_gripper_r_finger_tip_joint, r_gripper_joint, l_shoulder_pan_joint,
+  l_shoulder_lift_joint, l_upper_arm_roll_joint, l_elbow_flex_joint, l_forearm_roll_joint,
+  l_wrist_flex_joint, l_wrist_roll_joint, l_gripper_motor_slider_joint, l_gripper_motor_screw_joint,
+  l_gripper_l_finger_joint, l_gripper_l_finger_tip_joint, l_gripper_r_finger_joint,
+  l_gripper_r_finger_tip_joint, l_gripper_joint, torso_lift_motor_screw_joint]
+robot_name: pr2
+group_name: right_arm
+
+
+states:
+- state0: &state0
+     [-0.8452,  0.0813, -1.8312, -1.555 ,  2.6911, -0.8326,  2.068 ]
+- state1: &state1
+     [-0.4134, -0.238 , -3.6504, -1.1768,  2.7225, -1.2706, -2.3709]
+- state2: &state2
+     [-0.9547,  0.3356, -2.3151, -0.9126,  1.8166, -0.8724, -3.1287]
+- state3: &state3
+     [-0.496 , -0.2946, -2.626 , -1.5671, -0.9644, -0.5307,  0.5828]
+- state4: &state4
+     [-0.978 , -0.235 , -1.3629, -1.282 , -2.2903, -0.4913,  0.9081]
+- state5: &state5
+     [-0.3043, -0.1995,  0.4997, -0.9161, -3.0128, -1.2772, -0.4844]
+- state6: &state6
+     [-0.0826, -0.3115, -0.7685, -1.0468, -2.8332, -1.2915,  0.7087]
+- state7: &state7
+     [-0.9493, -0.2259, -1.2924, -1.2902, -2.2911, -0.5655, -2.1449]
+- state8: &state8
+     [-0.0077, -0.1813, -1.2825, -0.2072, -2.475 , -0.3674, -2.5659]  
+     
+problems:     
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state1
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state5
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state5
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state5
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state6
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state6
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state7
+    goal:
+      active_dof_values: *state8

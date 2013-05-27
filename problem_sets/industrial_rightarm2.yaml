@@ -1,0 +1,231 @@
+active_affine: 0
+active_joints: [r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint,
+  r_elbow_flex_joint, r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint]
+default_base_pose: [0.9074254167930225, 0.0, 0.0, -0.42021317561210453, -0.0048143863677978516,
+  0.039366304874420166, 0.0]
+default_joint_values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.16825, 0.0, 0.0, 0.0, -0.2761549481623158, 0.8939542514393661, -0.4462472669817504,
+  -1.6105027440487039, 2.328001213611822, -1.0881333252440992, -2.3998853474978716,
+  2.248201624865942e-15, 0.0, 0.0, 0.0, 0.0, 0.0, -1.1102230246251565e-16, 1.1473791555597268,
+  -0.2578419004077155, 0.5298918609954418, -2.121201719392923, 2.198118788614387,
+  -1.4189668927954484, 2.1828521334438378, -1.174060848541103e-14, 0.0, 0.0, 0.0,
+  0.0, 0.0, -1.6653345369377348e-16, 0.0]
+env_file: industrial.env.xml
+joint_names: [fl_caster_rotation_joint, fl_caster_l_wheel_joint, fl_caster_r_wheel_joint,
+  fr_caster_rotation_joint, fr_caster_l_wheel_joint, fr_caster_r_wheel_joint, bl_caster_rotation_joint,
+  bl_caster_l_wheel_joint, bl_caster_r_wheel_joint, br_caster_rotation_joint, br_caster_l_wheel_joint,
+  br_caster_r_wheel_joint, torso_lift_joint, head_pan_joint, head_tilt_joint, laser_tilt_mount_joint,
+  r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint,
+  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint, r_gripper_motor_slider_joint,
+  r_gripper_motor_screw_joint, r_gripper_l_finger_joint, r_gripper_l_finger_tip_joint,
+  r_gripper_r_finger_joint, r_gripper_r_finger_tip_joint, r_gripper_joint, l_shoulder_pan_joint,
+  l_shoulder_lift_joint, l_upper_arm_roll_joint, l_elbow_flex_joint, l_forearm_roll_joint,
+  l_wrist_flex_joint, l_wrist_roll_joint, l_gripper_motor_slider_joint, l_gripper_motor_screw_joint,
+  l_gripper_l_finger_joint, l_gripper_l_finger_tip_joint, l_gripper_r_finger_joint,
+  l_gripper_r_finger_tip_joint, l_gripper_joint, torso_lift_motor_screw_joint]
+robot_name: pr2
+group_name: right_arm
+
+
+states:
+- state0: &state0
+      [-0.2762,  0.894 , -0.4462, -1.6105,  2.328 , -1.0881, -2.3999]
+- state1: &state1
+     [-0.571 , -0.3534, -1.7684, -1.5384, -2.7693, -1.5537, -1.4818]
+- state2: &state2
+     [-0.1708,  0.093 , -1.1193, -1.0388,  2.8681, -1.4571, -1.9924]
+- state3: &state3
+     [ 0.2855, -0.198 , -3.2144, -1.0791, -2.0565, -1.1219, -0.6414]
+- state4: &state4
+     [-0.5471,  0.1817, -1.835 , -1.6187,  3.0026, -1.7675, -1.3979]
+- state5: &state5
+     [ 0.1713,  0.377 , -0.5826, -0.5771, -1.5264, -0.4143,  2.0764]
+- state6: &state6
+     [ 0.514 ,  0.2662, -1.2524, -0.6177,  2.9156, -0.2591, -1.7356]
+- state7: &state7
+     [ 0.5512, -0.3535, -1.2124, -0.4724, -2.1021, -0.5965, -2.8023]
+- state8: &state8
+     [ 0.5272,  0.7193, -0.9876, -0.5453,  1.2938, -0.3151, -0.5195]
+- state9: &state9
+     [-0.3728,  1.0259, -0.9876, -1.2082,  2.0042, -1.3781, -1.6173]
+problems:
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state1
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state4
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state3
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state5
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state4
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state5
+    goal:
+      active_dof_values: *state6
+  - start:
+      active_dof_values: *state5
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state5
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state5
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state6
+    goal:
+      active_dof_values: *state7
+  - start:
+      active_dof_values: *state6
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state6
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state7
+    goal:
+      active_dof_values: *state8
+  - start:
+      active_dof_values: *state7
+    goal:
+      active_dof_values: *state9
+  - start:
+      active_dof_values: *state8
+    goal:
+      active_dof_values: *state9

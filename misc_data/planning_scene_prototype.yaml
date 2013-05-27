@@ -1,0 +1,550 @@
+name: bookshelves+
+robot_state: 
+  joint_state: 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 0
+        nsecs: 0
+      frame_id: odom_combined
+    name: ['fl_caster_rotation_joint', 'fl_caster_l_wheel_joint', 'fl_caster_r_wheel_joint', 'fr_caster_rotation_joint', 'fr_caster_l_wheel_joint', 'fr_caster_r_wheel_joint', 'bl_caster_rotation_joint', 'bl_caster_l_wheel_joint', 'bl_caster_r_wheel_joint', 'br_caster_rotation_joint', 'br_caster_l_wheel_joint', 'br_caster_r_wheel_joint', 'torso_lift_joint', 'l_shoulder_pan_joint', 'l_shoulder_lift_joint', 'l_upper_arm_roll_joint', 'l_elbow_flex_joint', 'l_forearm_roll_joint', 'l_wrist_flex_joint', 'l_wrist_roll_joint', 'l_gripper_motor_slider_joint', 'l_gripper_motor_screw_joint', 'l_gripper_l_finger_joint', 'l_gripper_l_finger_tip_joint', 'l_gripper_r_finger_joint', 'l_gripper_r_finger_tip_joint', 'l_gripper_joint', 'head_pan_joint', 'head_tilt_joint', 'laser_tilt_mount_joint', 'r_shoulder_pan_joint', 'r_shoulder_lift_joint', 'r_upper_arm_roll_joint', 'r_elbow_flex_joint', 'r_forearm_roll_joint', 'r_wrist_flex_joint', 'r_wrist_roll_joint', 'r_gripper_motor_slider_joint', 'r_gripper_motor_screw_joint', 'r_gripper_l_finger_joint', 'r_gripper_l_finger_tip_joint', 'r_gripper_r_finger_joint', 'r_gripper_r_finger_tip_joint', 'r_gripper_joint', 'torso_lift_motor_screw_joint']
+    position: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.16825, 0.0, 0.0, 0.0, -1.13565, 0.0, -1.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.13565, 0.0, -1.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    velocity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    effort: []
+  multi_dof_joint_state: 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 0
+        nsecs: 0
+      frame_id: odom_combined
+    joint_names: ['world_joint']
+    joint_transforms: 
+      - 
+        translation: 
+          x: 0.0
+          y: 0.0
+          z: 0.0
+        rotation: 
+          x: 0.0
+          y: 0.0
+          z: 0.0
+          w: 1.0
+  attached_collision_objects: []
+robot_model_name: pr2
+robot_model_root: base_footprint
+fixed_frame_transforms: 
+  - 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 0
+        nsecs: 0
+      frame_id: odom_combined
+    child_frame_id: odom_combined
+    transform: 
+      translation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+      rotation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+allowed_collision_matrix: 
+  entry_names: ['base_bellow_link', 'base_footprint', 'base_link', 'bl_caster_l_wheel_link', 'bl_caster_r_wheel_link', 'bl_caster_rotation_link', 'br_caster_l_wheel_link', 'br_caster_r_wheel_link', 'br_caster_rotation_link', 'double_stereo_link', 'fl_caster_l_wheel_link', 'fl_caster_r_wheel_link', 'fl_caster_rotation_link', 'fr_caster_l_wheel_link', 'fr_caster_r_wheel_link', 'fr_caster_rotation_link', 'head_mount_kinect_ir_link', 'head_mount_kinect_rgb_link', 'head_mount_link', 'head_mount_prosilica_link', 'head_pan_link', 'head_plate_frame', 'head_tilt_link', 'l_elbow_flex_link', 'l_forearm_link', 'l_forearm_roll_link', 'l_gripper_l_finger_link', 'l_gripper_l_finger_tip_link', 'l_gripper_motor_accelerometer_link', 'l_gripper_palm_link', 'l_gripper_r_finger_link', 'l_gripper_r_finger_tip_link', 'l_shoulder_lift_link', 'l_shoulder_pan_link', 'l_upper_arm_link', 'l_upper_arm_roll_link', 'l_wrist_flex_link', 'l_wrist_roll_link', 'laser_tilt_mount_link', 'r_elbow_flex_link', 'r_forearm_link', 'r_forearm_roll_link', 'r_gripper_l_finger_link', 'r_gripper_l_finger_tip_link', 'r_gripper_motor_accelerometer_link', 'r_gripper_palm_link', 'r_gripper_r_finger_link', 'r_gripper_r_finger_tip_link', 'r_shoulder_lift_link', 'r_shoulder_pan_link', 'r_upper_arm_link', 'r_upper_arm_roll_link', 'r_wrist_flex_link', 'r_wrist_roll_link', 'sensor_mount_link', 'torso_lift_link']
+  entry_values: 
+    - 
+      enabled: [False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False, True, True, True, True, False, False, True, False, False, False, False, False, False, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, True, True, True, True, True, True, True, True, True, True, True, False, True, True, False, False, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True, True, True, False, False, True, False, False, False, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True, True, True, False, False, True, False, False, False, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, False, False, True, False, False, False, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, False, False, True, False, False, False, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, False, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, False, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, False, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, False, False, True, False, False, False, True, True, True, True, False, True, True, True, True, True, False, False, True, False, False, False, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False, True, True, False, True, False, False, True, True]
+    - 
+      enabled: [False, True, False, False, False, False, True, True, True, True, False, False, False, True, True, False, True, True, True, True, False, True, True, True, False, True, True, True, True, True, True, True, True, False, True, True, True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False]
+    - 
+      enabled: [True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False, True, True, False, True, False, False, True, True]
+    - 
+      enabled: [False, True, False, False, False, False, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, True, False, True, True, True, False, True, True, True, True, True, True, False, True, True, True, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, True, False]
+    - 
+      enabled: [False, True, False, False, False, False, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, True, False, True, True, True, True, False, True, True, True, True, True, False, True, True, True, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, True, False]
+    - 
+      enabled: [True, True, False, True, True, False, True, True, True, True, False, False, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, False, True, True, True, True, True, False, False, False, False, False, True, False, False, True, False, False, False, True, False, False, True, False]
+    - 
+      enabled: [False, True, False, False, False, False, True, True, True, False, False, False, False, False, False, False, True, True, True, True, False, False, False, True, True, True, True, True, True, False, True, True, True, False, True, True, True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+    - 
+      enabled: [False, True, False, False, False, False, True, True, True, False, False, False, False, False, False, False, True, True, True, True, False, False, False, True, True, True, True, True, True, True, False, True, True, False, True, True, True, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False]
+    - 
+      enabled: [False, True, False, False, False, False, True, True, True, True, False, False, False, False, False, False, True, True, True, True, False, True, False, True, True, True, True, True, True, True, True, False, True, False, True, True, True, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, True, False]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, False, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, False, True, True, False, False, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, False, False, False, False, False, False, False, False, False, True, False, False, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, False, True, False, False, True, False, False, False, True, True, False, True, False, False, True, True]
+    - 
+      enabled: [True, True, False, False, False, False, True, True, True, True, False, False, False, True, True, False, True, True, True, True, False, True, False, True, True, True, True, True, True, True, True, True, True, False, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False]
+    - 
+      enabled: [True, True, False, True, True, False, True, True, True, True, False, False, False, True, True, False, True, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, True, True, True, False, True, False, True, False, True, False, False, True, False, False, False, True, True, True, True, False, True, True, True]
+    - 
+      enabled: [True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False, True, True, False, True, False, False, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [False, True, False, True, True, True, False, False, False, True, True, True, False, False, False, False, True, True, True, True, False, True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, True, True, True, True, True, True, True, True, False, True, True, True, True, True, False]
+    - 
+      enabled: [True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False, True, True, False, True, False, False, True, True, True, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+    - 
+      enabled: [False, True, False, True, True, True, False, False, False, False, False, False, False, False, False, False, True, True, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, False, True, True, True, True, True, True, False, True, True, True, True, True, False]
+    - 
+      enabled: [False, True, False, True, True, True, False, False, False, True, False, False, False, False, False, False, True, True, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, True, False, True, True, True, True, True, False, True, True, True, True, True, False]
+    - 
+      enabled: [True, True, False, True, True, True, True, True, False, True, True, True, False, False, False, False, True, True, True, True, True, True, True, False, False, False, True, True, True, False, True, True, False, False, False, True, False, False, True, True, True, True, True, True, False, True, True, True, True, False, True, True, True, True, True, False]
+    - 
+      enabled: [False, True, False, True, True, True, False, False, False, False, False, False, False, False, False, False, True, True, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, True, True, True, False, True, True, True, False, True, True, True, True, True, False]
+    - 
+      enabled: [False, True, False, True, True, True, False, False, False, False, False, False, False, False, False, False, True, True, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, True, True, True, True, False, True, True, False, True, True, True, True, True, False]
+    - 
+      enabled: [False, True, False, True, True, True, False, False, False, True, False, False, False, False, False, False, True, True, True, True, False, True, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, True, True, True, True, True, True, True, True, False, True, False, True, True, True, True, True, False]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, False, True, True, False, False, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, False, False, False, True, False, False, True, True, False, True, False, False, False, False, False, False, True, False, True, True, False, False, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, True, False, False, False, True, False, True, True, False, False, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, True]
+    - 
+      enabled: [False, True, False, True, True, True, False, False, False, True, True, True, False, False, False, False, True, True, True, True, False, True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, True, True, True, True, True, True, True, False, True, True, False, True, True, False]
+    - 
+      enabled: [False, True, False, True, True, True, False, True, False, True, True, True, False, False, False, False, True, True, True, True, False, True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, True, True, True, True, True, True, True, True, False, True, True, True, False, True, False]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, False, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True]
+    - 
+      enabled: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, True, False, True, False, False, False, False, False, False, True, True, True, True, False, False, True, False]
+  default_entry_names: []
+  default_entry_values: []
+link_padding: 
+  - 
+    link_name: base_bellow_link
+    padding: 0.0
+  - 
+    link_name: base_footprint
+    padding: 0.0
+  - 
+    link_name: base_link
+    padding: 0.0
+  - 
+    link_name: bl_caster_l_wheel_link
+    padding: 0.0
+  - 
+    link_name: bl_caster_r_wheel_link
+    padding: 0.0
+  - 
+    link_name: bl_caster_rotation_link
+    padding: 0.0
+  - 
+    link_name: br_caster_l_wheel_link
+    padding: 0.0
+  - 
+    link_name: br_caster_r_wheel_link
+    padding: 0.0
+  - 
+    link_name: br_caster_rotation_link
+    padding: 0.0
+  - 
+    link_name: double_stereo_link
+    padding: 0.0
+  - 
+    link_name: fl_caster_l_wheel_link
+    padding: 0.0
+  - 
+    link_name: fl_caster_r_wheel_link
+    padding: 0.0
+  - 
+    link_name: fl_caster_rotation_link
+    padding: 0.0
+  - 
+    link_name: fr_caster_l_wheel_link
+    padding: 0.0
+  - 
+    link_name: fr_caster_r_wheel_link
+    padding: 0.0
+  - 
+    link_name: fr_caster_rotation_link
+    padding: 0.0
+  - 
+    link_name: head_mount_kinect_ir_link
+    padding: 0.0
+  - 
+    link_name: head_mount_kinect_rgb_link
+    padding: 0.0
+  - 
+    link_name: head_mount_link
+    padding: 0.0
+  - 
+    link_name: head_mount_prosilica_link
+    padding: 0.0
+  - 
+    link_name: head_pan_link
+    padding: 0.0
+  - 
+    link_name: head_plate_frame
+    padding: 0.0
+  - 
+    link_name: head_tilt_link
+    padding: 0.0
+  - 
+    link_name: l_elbow_flex_link
+    padding: 0.0
+  - 
+    link_name: l_forearm_link
+    padding: 0.0
+  - 
+    link_name: l_forearm_roll_link
+    padding: 0.0
+  - 
+    link_name: l_gripper_l_finger_link
+    padding: 0.0
+  - 
+    link_name: l_gripper_l_finger_tip_link
+    padding: 0.0
+  - 
+    link_name: l_gripper_motor_accelerometer_link
+    padding: 0.0
+  - 
+    link_name: l_gripper_palm_link
+    padding: 0.0
+  - 
+    link_name: l_gripper_r_finger_link
+    padding: 0.0
+  - 
+    link_name: l_gripper_r_finger_tip_link
+    padding: 0.0
+  - 
+    link_name: l_shoulder_lift_link
+    padding: 0.0
+  - 
+    link_name: l_shoulder_pan_link
+    padding: 0.0
+  - 
+    link_name: l_upper_arm_link
+    padding: 0.0
+  - 
+    link_name: l_upper_arm_roll_link
+    padding: 0.0
+  - 
+    link_name: l_wrist_flex_link
+    padding: 0.0
+  - 
+    link_name: l_wrist_roll_link
+    padding: 0.0
+  - 
+    link_name: laser_tilt_mount_link
+    padding: 0.0
+  - 
+    link_name: r_elbow_flex_link
+    padding: 0.0
+  - 
+    link_name: r_forearm_link
+    padding: 0.0
+  - 
+    link_name: r_forearm_roll_link
+    padding: 0.0
+  - 
+    link_name: r_gripper_l_finger_link
+    padding: 0.0
+  - 
+    link_name: r_gripper_l_finger_tip_link
+    padding: 0.0
+  - 
+    link_name: r_gripper_motor_accelerometer_link
+    padding: 0.0
+  - 
+    link_name: r_gripper_palm_link
+    padding: 0.0
+  - 
+    link_name: r_gripper_r_finger_link
+    padding: 0.0
+  - 
+    link_name: r_gripper_r_finger_tip_link
+    padding: 0.0
+  - 
+    link_name: r_shoulder_lift_link
+    padding: 0.0
+  - 
+    link_name: r_shoulder_pan_link
+    padding: 0.0
+  - 
+    link_name: r_upper_arm_link
+    padding: 0.0
+  - 
+    link_name: r_upper_arm_roll_link
+    padding: 0.0
+  - 
+    link_name: r_wrist_flex_link
+    padding: 0.0
+  - 
+    link_name: r_wrist_roll_link
+    padding: 0.0
+  - 
+    link_name: sensor_mount_link
+    padding: 0.0
+  - 
+    link_name: torso_lift_link
+    padding: 0.0
+link_scale: 
+  - 
+    link_name: base_bellow_link
+    scale: 1.0
+  - 
+    link_name: base_footprint
+    scale: 1.0
+  - 
+    link_name: base_link
+    scale: 1.0
+  - 
+    link_name: bl_caster_l_wheel_link
+    scale: 1.0
+  - 
+    link_name: bl_caster_r_wheel_link
+    scale: 1.0
+  - 
+    link_name: bl_caster_rotation_link
+    scale: 1.0
+  - 
+    link_name: br_caster_l_wheel_link
+    scale: 1.0
+  - 
+    link_name: br_caster_r_wheel_link
+    scale: 1.0
+  - 
+    link_name: br_caster_rotation_link
+    scale: 1.0
+  - 
+    link_name: double_stereo_link
+    scale: 1.0
+  - 
+    link_name: fl_caster_l_wheel_link
+    scale: 1.0
+  - 
+    link_name: fl_caster_r_wheel_link
+    scale: 1.0
+  - 
+    link_name: fl_caster_rotation_link
+    scale: 1.0
+  - 
+    link_name: fr_caster_l_wheel_link
+    scale: 1.0
+  - 
+    link_name: fr_caster_r_wheel_link
+    scale: 1.0
+  - 
+    link_name: fr_caster_rotation_link
+    scale: 1.0
+  - 
+    link_name: head_mount_kinect_ir_link
+    scale: 1.0
+  - 
+    link_name: head_mount_kinect_rgb_link
+    scale: 1.0
+  - 
+    link_name: head_mount_link
+    scale: 1.0
+  - 
+    link_name: head_mount_prosilica_link
+    scale: 1.0
+  - 
+    link_name: head_pan_link
+    scale: 1.0
+  - 
+    link_name: head_plate_frame
+    scale: 1.0
+  - 
+    link_name: head_tilt_link
+    scale: 1.0
+  - 
+    link_name: l_elbow_flex_link
+    scale: 1.0
+  - 
+    link_name: l_forearm_link
+    scale: 1.0
+  - 
+    link_name: l_forearm_roll_link
+    scale: 1.0
+  - 
+    link_name: l_gripper_l_finger_link
+    scale: 1.0
+  - 
+    link_name: l_gripper_l_finger_tip_link
+    scale: 1.0
+  - 
+    link_name: l_gripper_motor_accelerometer_link
+    scale: 1.0
+  - 
+    link_name: l_gripper_palm_link
+    scale: 1.0
+  - 
+    link_name: l_gripper_r_finger_link
+    scale: 1.0
+  - 
+    link_name: l_gripper_r_finger_tip_link
+    scale: 1.0
+  - 
+    link_name: l_shoulder_lift_link
+    scale: 1.0
+  - 
+    link_name: l_shoulder_pan_link
+    scale: 1.0
+  - 
+    link_name: l_upper_arm_link
+    scale: 1.0
+  - 
+    link_name: l_upper_arm_roll_link
+    scale: 1.0
+  - 
+    link_name: l_wrist_flex_link
+    scale: 1.0
+  - 
+    link_name: l_wrist_roll_link
+    scale: 1.0
+  - 
+    link_name: laser_tilt_mount_link
+    scale: 1.0
+  - 
+    link_name: r_elbow_flex_link
+    scale: 1.0
+  - 
+    link_name: r_forearm_link
+    scale: 1.0
+  - 
+    link_name: r_forearm_roll_link
+    scale: 1.0
+  - 
+    link_name: r_gripper_l_finger_link
+    scale: 1.0
+  - 
+    link_name: r_gripper_l_finger_tip_link
+    scale: 1.0
+  - 
+    link_name: r_gripper_motor_accelerometer_link
+    scale: 1.0
+  - 
+    link_name: r_gripper_palm_link
+    scale: 1.0
+  - 
+    link_name: r_gripper_r_finger_link
+    scale: 1.0
+  - 
+    link_name: r_gripper_r_finger_tip_link
+    scale: 1.0
+  - 
+    link_name: r_shoulder_lift_link
+    scale: 1.0
+  - 
+    link_name: r_shoulder_pan_link
+    scale: 1.0
+  - 
+    link_name: r_upper_arm_link
+    scale: 1.0
+  - 
+    link_name: r_upper_arm_roll_link
+    scale: 1.0
+  - 
+    link_name: r_wrist_flex_link
+    scale: 1.0
+  - 
+    link_name: r_wrist_roll_link
+    scale: 1.0
+  - 
+    link_name: sensor_mount_link
+    scale: 1.0
+  - 
+    link_name: torso_lift_link
+    scale: 1.0
+object_colors: []
+world: 
+  collision_objects:  []
+  octomap: 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 0
+        nsecs: 0
+      frame_id: odom_combined
+    origin: 
+      position: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 0.0
+    octomap: 
+      header: 
+        seq: 0
+        stamp: 
+          secs: 0
+          nsecs: 0
+        frame_id: ''
+      binary: False
+      id: ''
+      resolution: 0.0
+      data: []
+  collision_map: 
+    header: 
+      seq: 0
+      stamp: 
+        secs: 0
+        nsecs: 0
+      frame_id: odom_combined
+    boxes: []
+is_diff: False
+

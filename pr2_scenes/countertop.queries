@@ -1,0 +1,103 @@
+countertop
+start
+1
+pr2.countertop.initial
+l_elbow_flex_joint = -1.4
+l_forearm_roll_joint = 0.00079943310185193195
+l_shoulder_lift_joint = 1.0
+l_shoulder_pan_joint = 1.5
+l_upper_arm_roll_joint = 0.005683010665493704
+l_wrist_flex_joint = -0.7439117804053561
+l_wrist_roll_joint = 0.00049889278955195238
+r_elbow_flex_joint = -1.4
+r_forearm_roll_joint = -0.00041708680445573521
+r_shoulder_lift_joint = 0.017997624551430391
+r_shoulder_pan_joint = -1.5
+r_upper_arm_roll_joint = -0.005238188295824564
+r_wrist_flex_joint = -0.74471175505726084
+r_wrist_roll_joint = -0.0010002085575777642
+torso_lift_joint = 0.21
+world_joint/theta = 0
+world_joint/x = 0
+world_joint/y = 0
+.
+goal
+13
+link_constraint
+countertop.dishwasher_01
+r_wrist_roll_link
+xyz 0.21 -0.65 0.48
+rpy 0.3 1.57 0.0
+.
+link_constraint
+countertop.dishwasher_02
+r_wrist_roll_link
+xyz 0.01 -0.7 0.45
+rpy 1.0 1.57 0.0
+.
+link_constraint
+countertop.dishwasher_03
+r_wrist_roll_link
+xyz 0.43 -0.56 0.52
+rpy 0.5 0.30 0.0
+.
+link_constraint
+countertop.left_shelf_01
+r_wrist_roll_link
+xyz 0.52 0.14 1.440
+rpy 1.0 0.05 0.0
+.
+link_constraint
+countertop.left_shelf_02
+r_wrist_roll_link
+xyz 0.52 0.155 1.420
+rpy 1.0 0.05 0.90
+.
+link_constraint
+countertop.right_counter_01
+r_wrist_roll_link
+xyz 0.56 -0.56 0.94
+rpy 0.0 -0.3 -0.1
+.
+link_constraint
+countertop.right_counter_02
+r_wrist_roll_link
+xyz 0.69 -0.46 0.94
+rpy 0.0 0.3 0.9
+.
+link_constraint
+countertop.right_counter_03
+r_wrist_roll_link
+xyz 0.63 -0.57 0.97
+rpy -0.2 -0.1 0.0
+.
+link_constraint
+countertop.right_counter_04
+r_wrist_roll_link
+xyz 0.66 -0.58 0.96
+rpy 1.0 -0.6 -0.92
+.
+link_constraint
+countertop.right_shelf_01
+r_wrist_roll_link
+xyz 0.64 -0.32 1.380
+rpy 0.0 -0.0 0.1
+.
+link_constraint
+countertop.right_shelf_02
+r_wrist_roll_link
+xyz 0.605 -0.48 1.370
+rpy 0.8 -0.0 0.3
+.
+link_constraint
+countertop.sink_01
+r_wrist_roll_link
+xyz 0.54 -0.06 0.81
+rpy 1.0 0.05 0.11
+.
+link_constraint
+countertop.sink_02
+r_wrist_roll_link
+xyz 0.7 -0.06 0.8
+rpy 0.0 1.57 0.0
+.

@@ -1,0 +1,49 @@
+industrial
+start
+1
+pr2.industrial.initial
+l_elbow_flex_joint = -1.4
+l_forearm_roll_joint = 0.00079943310185193195
+l_shoulder_lift_joint = 1.0
+l_shoulder_pan_joint = 1.5
+l_upper_arm_roll_joint = 0.005683010665493704
+l_wrist_flex_joint = -0.7439117804053561
+l_wrist_roll_joint = 0.00049889278955195238
+r_elbow_flex_joint = -1.4
+r_forearm_roll_joint = -0.00041708680445573521
+r_shoulder_lift_joint = 0.017997624551430391
+r_shoulder_pan_joint = -1.75
+r_upper_arm_roll_joint = -0.005238188295824564
+r_wrist_flex_joint = -1.1
+r_wrist_roll_joint = -0.0010002085575777642
+torso_lift_joint = 0.2
+world_joint/theta = 0
+world_joint/x = 0
+world_joint/y = 0
+.
+goal
+4
+link_constraint
+industrial.oven_01
+r_wrist_roll_link
+xyz 0.75 -0.05 0.98
+rpy 0 1.57 0
+.
+link_constraint
+industrial.top_bin_left_01
+r_wrist_roll_link
+xyz 0.45 -0.55 1.25
+rpy 0 1.57 0.0
+.
+link_constraint
+industrial.top_bin_right_01
+r_wrist_roll_link
+xyz 0.32 -0.68 1.25
+rpy 1.57 1.57 0
+.
+link_constraint
+industrial.top_bin_right_02
+r_wrist_roll_link
+xyz 0.26 -0.72 1.26
+rpy 1.90 1.57 0.1
+.

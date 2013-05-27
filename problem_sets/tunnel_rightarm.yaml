@@ -1,0 +1,64 @@
+active_affine: 0
+active_joints: [r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint,
+  r_elbow_flex_joint, r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint]
+default_base_pose: [0.9999523740218402, 0.0, 0.0, 0.00975959466810749, -0.013043247163295746,
+  -0.2435353398323059, 0.0]
+default_joint_values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.16825, 0.0, 0.0, 0.0, -0.37279882212870064, 1.0259015008778194, -0.9875997438281771,
+  -1.208229229103619, 2.0676739431952065, -0.5630237954661839, -1.6563473012595384,
+  2.248201624865942e-15, 0.0, 0.0, 0.0, 0.0, 0.0, -1.1102230246251565e-16, 1.1473791555597268,
+  -0.2578419004077155, 0.5298918609954418, -2.121201719392923, 2.198118788614387,
+  -1.4189668927954484, 2.1828521334438378, -1.2961853812498703e-14, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0]
+env_file: tunnel.env.xml
+joint_names: [fl_caster_rotation_joint, fl_caster_l_wheel_joint, fl_caster_r_wheel_joint,
+  fr_caster_rotation_joint, fr_caster_l_wheel_joint, fr_caster_r_wheel_joint, bl_caster_rotation_joint,
+  bl_caster_l_wheel_joint, bl_caster_r_wheel_joint, br_caster_rotation_joint, br_caster_l_wheel_joint,
+  br_caster_r_wheel_joint, torso_lift_joint, head_pan_joint, head_tilt_joint, laser_tilt_mount_joint,
+  r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint,
+  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint, r_gripper_motor_slider_joint,
+  r_gripper_motor_screw_joint, r_gripper_l_finger_joint, r_gripper_l_finger_tip_joint,
+  r_gripper_r_finger_joint, r_gripper_r_finger_tip_joint, r_gripper_joint, l_shoulder_pan_joint,
+  l_shoulder_lift_joint, l_upper_arm_roll_joint, l_elbow_flex_joint, l_forearm_roll_joint,
+  l_wrist_flex_joint, l_wrist_roll_joint, l_gripper_motor_slider_joint, l_gripper_motor_screw_joint,
+  l_gripper_l_finger_joint, l_gripper_l_finger_tip_joint, l_gripper_r_finger_joint,
+  l_gripper_r_finger_tip_joint, l_gripper_joint, torso_lift_motor_screw_joint]
+robot_name: pr2
+group_name: right_arm
+
+
+states:
+- state0: &state0
+      [-0.3728,  1.0259, -0.9876, -1.2082,  2.0677, -0.563 , -1.6563]
+- state1: &state1
+      [ 0.2993,  0.1747, -1.7835, -0.8593,  3.1042, -1.2145, -1.3626]
+- state2: &state2
+      [ 0.3537,  0.2079, -1.7168, -0.2937,  3.0224, -0.7083, -1.3286]
+- state3: &state3
+      [ 0.3398, -0.2349, -0.0415, -1.5042,  2.7647, -1.7995,  3.0539]
+
+problems:
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state1
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state3

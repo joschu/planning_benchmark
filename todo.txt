@@ -1,4 +1,0 @@
-- script to generate all pairwise queries
-- verify trajectories script
-- run OMPL script
-- run SBPL script

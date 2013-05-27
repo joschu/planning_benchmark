@@ -1,0 +1,85 @@
+tabletop
+start
+1
+pr2.tabletop.initial
+l_elbow_flex_joint = -0.828274
+l_forearm_roll_joint = 0.687905
+l_shoulder_lift_joint = 0.7797
+l_shoulder_pan_joint = 0.848628
+l_upper_arm_roll_joint = 1.396294
+l_wrist_flex_joint = -1.518703
+l_wrist_roll_joint = 0.394348
+r_elbow_flex_joint = -1.073419
+r_forearm_roll_joint = -0.705232
+r_shoulder_lift_joint = 0.888673
+r_shoulder_pan_joint = -0.657967
+r_upper_arm_roll_joint = -1.4311
+r_wrist_flex_joint = -1.107079
+r_wrist_roll_joint = 2.806742
+torso_lift_joint = 0.0
+world_joint/theta = 0
+world_joint/x = 0
+world_joint/y = 0
+.
+goal
+10
+link_constraint
+tabletop.tabletop_01
+r_wrist_roll_link
+xyz 0.52 -0.28 1.0
+rpy 0 0 0
+.
+link_constraint
+tabletop.tabletop_02
+r_wrist_roll_link
+xyz 0.5 -0.1 0.398
+rpy 0 0 0
+.
+link_constraint
+tabletop.tabletop_03
+r_wrist_roll_link
+xyz 0.58 -0.06 0.94
+rpy 0 0 0.14
+.
+link_constraint
+tabletop.tabletop_04
+r_wrist_roll_link
+xyz 0.54 0.12 0.41
+rpy 0 0 -0.12
+.
+link_constraint
+tabletop.tabletop_05
+r_wrist_roll_link
+xyz 0.65 -0.1 0.95
+rpy 0 0 0.13
+.
+link_constraint
+tabletop.tabletop_06
+r_wrist_roll_link
+xyz 0.586 0.056 0.422
+rpy 0 0 -0.06
+.
+link_constraint
+tabletop.tabletop_07
+r_wrist_roll_link
+xyz 0.535 -0.039 0.98
+rpy 0 0 0.05
+.
+link_constraint
+tabletop.tabletop_08
+r_wrist_roll_link
+xyz 0.58 0.058 0.40
+rpy 0 0 -0.045
+.
+link_constraint
+tabletop.tabletop_09
+r_wrist_roll_link
+xyz 0.68 -0.04 0.88
+rpy 0 0 0.06
+.
+link_constraint
+tabletop.tabletop_10
+r_wrist_roll_link
+xyz 0.605 0.03 0.42
+rpy 0 0 -0.06
+.

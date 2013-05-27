@@ -1,0 +1,73 @@
+active_affine: 11
+active_joints: [torso_lift_joint, l_shoulder_pan_joint, l_shoulder_lift_joint, l_upper_arm_roll_joint,
+  l_elbow_flex_joint, l_forearm_roll_joint, l_wrist_flex_joint, l_wrist_roll_joint,
+  r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint,
+  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint]
+default_base_pose: [0.9999523740218402, 0.0, 0.0, 0.00975959466810749, 1.3978016376495361,
+  0.4879075586795807, 0.0]
+default_joint_values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.16825, 0.0, 0.0, 0.0, -0.9931720336300067, -0.34122908576165223, -0.992525272559375,
+  -1.9191522075271674, -2.377783024664484, -1.2299426766781902, -2.0603970887900847,
+  2.248201624865942e-15, 0.0, 0.0, 0.0, 0.0, 0.0, -1.1102230246251565e-16, 1.1473791555597268,
+  -0.2578419004077155, 0.5298918609954418, -2.121201719392923, 2.198118788614387,
+  -1.4189668927954484, 2.1828521334438378, -1.4960255256823984e-14, 0.0, 0.0, 0.0,
+  0.0, 0.0, -4.85722573273506e-16, 0.0]
+env_file: kitchen.env.xml
+joint_names: [fl_caster_rotation_joint, fl_caster_l_wheel_joint, fl_caster_r_wheel_joint,
+  fr_caster_rotation_joint, fr_caster_l_wheel_joint, fr_caster_r_wheel_joint, bl_caster_rotation_joint,
+  bl_caster_l_wheel_joint, bl_caster_r_wheel_joint, br_caster_rotation_joint, br_caster_l_wheel_joint,
+  br_caster_r_wheel_joint, torso_lift_joint, head_pan_joint, head_tilt_joint, laser_tilt_mount_joint,
+  r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint,
+  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint, r_gripper_motor_slider_joint,
+  r_gripper_motor_screw_joint, r_gripper_l_finger_joint, r_gripper_l_finger_tip_joint,
+  r_gripper_r_finger_joint, r_gripper_r_finger_tip_joint, r_gripper_joint, l_shoulder_pan_joint,
+  l_shoulder_lift_joint, l_upper_arm_roll_joint, l_elbow_flex_joint, l_forearm_roll_joint,
+  l_wrist_flex_joint, l_wrist_roll_joint, l_gripper_motor_slider_joint, l_gripper_motor_screw_joint,
+  l_gripper_l_finger_joint, l_gripper_l_finger_tip_joint, l_gripper_r_finger_joint,
+  l_gripper_r_finger_tip_joint, l_gripper_joint, torso_lift_motor_screw_joint]
+robot_name: pr2
+group_name: whole_body
+
+states:
+- state0: &state0
+     [ 0.1683,  1.1474, -0.2578,  0.5299, -2.1212,  2.1981, -1.419 ,
+        2.1829, -0.9932, -0.3412, -0.9925, -1.9192, -2.3778, -1.2299,
+       -2.0604,  1.3978,  0.4879 ,  0.0195]
+- state1: &state1
+     [ 0.0115,  1.1474, -0.2578,  0.5299, -2.1212,  2.1981, -1.419 ,
+        2.1829, -0.8575,  0.8359,  0.0403, -1.1166, -1.9023, -0.9101,
+        1.9137,  1.094 ,  1.3812 , -3.1005]
+- state2: &state2
+     [ 0.0115,  0.2068,  0.0256, -0.1425, -1.7933,  3.0574, -1.7031,
+       -3.026 , -1.7337,  1.2958, -1.3434, -2.1026, -2.5197, -0.6516,
+        2.8249,  1.1277,  0.5623 , -3.1005]
+- state3: &state3
+     [ 0.0115,  0.3652,  0.8664,  0.7286, -1.7845, -2.6795, -0.9264,
+        2.3915, -1.7337,  1.2958, -1.3434, -2.1026, -2.5197, -0.6516,
+        2.8249,  1.1277,  0.5623, -3.1005]
+     
+problems:
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state1
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state0
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state2
+  - start:
+      active_dof_values: *state1
+    goal:
+      active_dof_values: *state3
+  - start:
+      active_dof_values: *state2
+    goal:
+      active_dof_values: *state3

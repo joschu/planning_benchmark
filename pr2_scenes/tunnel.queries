@@ -1,0 +1,48 @@
+tunnel
+start
+1
+pr2.tunnel.initial
+r_elbow_flex_joint = -1.4
+r_forearm_roll_joint = -0.00041708680445573521
+r_shoulder_lift_joint = 0.017997624551430391
+r_shoulder_pan_joint = -1.5
+r_upper_arm_roll_joint = -0.005238188295824564
+r_wrist_flex_joint = -0.74471175505726084
+r_wrist_roll_joint = -0.0010002085575777642
+torso_lift_joint = 0.1
+world_joint/theta = 0
+world_joint/x = 0
+world_joint/y = 0
+.
+goal
+5
+link_constraint
+tunnel.left_01
+r_wrist_roll_link
+xyz 0.65 0.05 0.95
+rpy 0.1 -0.02 0.02
+.
+link_constraint
+tunnel.left_02
+r_wrist_roll_link
+xyz 0.58 0.09 0.53
+rpy 0.80 -0.2 0.02
+.
+link_constraint
+tunnel.left_03
+r_wrist_roll_link
+xyz 0.50 0.12 0.42
+rpy 0.80 -0.2 0.02
+.
+link_constraint
+tunnel.right_01
+r_wrist_roll_link
+xyz 0.61 -0.38 0.48
+rpy 0.1 -0.02 0.02
+.
+link_constraint
+tunnel.right_02
+r_wrist_roll_link
+xyz 0.61 -0.38 1.18
+rpy 0.1 -0.02 0.02
+.
