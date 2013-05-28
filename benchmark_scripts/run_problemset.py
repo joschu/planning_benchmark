@@ -7,7 +7,7 @@ parser.add_argument("-o","--outfile",type=argparse.FileType("w"))
 parser.add_argument("planner", choices=["trajopt", "ompl"])
 
 parser.add_argument("--interactive", action="store_true")
-parser.add_argument("--multi_init", type=bool, default=True)
+parser.add_argument("--multi_init", action="store_true")
 
 
 parser.add_argument("--ompl_planner_id", default = "", choices = [
@@ -43,12 +43,24 @@ LEFT_POSTURES = [
     [-0.0428341, -0.489164, -0.6, -1.40856, 2.32152, -0.669566, -2.13699],# face up
     [0.0397607, 1.18538, -0.8, -0.756239, -2.84594, -1.06418, -2.42207]# floor down
 ]
+
+KITCHEN_WAYPOINTS = [
+      [ 0.    ,  0.0436,  0.8844,  1.493 , -0.2914,  2.6037, -0.4586,
+        0.6602,  0.0155,  0.8421, -2.0777, -0.544 , -2.5683, -0.4762,
+       -1.5533,  1.4904, -0.4271,  1.8619],
+      [ 0.    ,  0.0436,  0.8844,  1.493 , -0.2914,  2.6037, -0.4586,
+        0.6602,  0.0155,  0.8421, -2.0777, -0.544 , -2.5683, -0.4762,
+       -1.5533,  2.1866,  2.4017, -2.285 ]
+]
+
+
 def mirror_arm_joints(x):
     "mirror image of joints (r->l or l->r)"
     return [-x[0],x[1],-x[2],x[3],-x[4],x[5],-x[6]]
 def get_postures(group_name):
     if group_name=="left_arm": return LEFT_POSTURES
     if group_name=="right_arm": return [mirror_arm_joints(posture) for posture in LEFT_POSTURES]
+    if group_name=="whole_body": return KITCHEN_WAYPOINTS
     raise Exception
 def animate_traj(traj, robot, pause=True, restore=True):
     """make sure to set active DOFs beforehand"""
@@ -70,11 +82,22 @@ def get_ompl_service():
     print "ok"
     return svc
 
-    
+#@fu.once
+#def get_ompl_action_client():
+#    import rospy
+#    import moveit_msgs.msg as mm
+#    import actionlib
+#    print "waiting for move_group"
+#    client = actionlib.SimpleActionClient("move_group", mm.MoveGroupAction)
+#    client.wait_for_server()
+#    print "ok"
+#    return client
+
 def setup_ompl(env):        
     import rospy
     rospy.init_node("benchmark_ompl",disable_signals=True)    
     get_ompl_service()
+    #get_ompl_action_client()
     rave_env_to_ros(env)
     
 
@@ -82,15 +105,18 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
     
     start_joints = robot.GetActiveDOFValues()
     
-    n_steps = 11
+    n_steps = 41
     coll_coeff = 10
     dist_pen = .02
     
     waypoint_step = (n_steps - 1)// 2
     joint_waypoints = [(np.asarray(start_joints) + np.asarray(end_joints))/2]
     
-    if group_name in ["right_arm", "left_arm"]:
-        if args.multi_init:        
+    if args.multi_init:
+        if group_name in ["right_arm", "left_arm"]:
+            joint_waypoints.extend(get_postures(group_name))
+
+        elif group_name == "whole_body":
             joint_waypoints.extend(get_postures(group_name))
     
     success = False
@@ -167,7 +193,9 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
     from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros
     import rospy
     ps = rave_env_to_ros(robot.GetEnv())
+    #msg = mm.MoveGroupActionGoal()
     msg = mm.MotionPlanRequest()
+    #msg.goal.planning_options.plan_only = True
     msg.group_name = group_name
     msg.planner_id = args.ompl_planner_id
     msg.allowed_planning_time = 10
@@ -188,13 +216,20 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
 
     msg.start_state = ps.robot_state
     msg.goal_constraints = [c]
-    #msg.allowed_planning_time = rospy.Duration(args.max_planning_time)
+    #req.allowed_planning_time = rospy.Duration(args.max_planning_time)
+    #client = get_ompl_action_client()
     svc = get_ompl_service()
     try:
         t_start = time()
+        #print msg
         svc_response = svc.call(msg)
+        #client.send_goal(msg.goal)
+        #client.wait_for_result()
+        #result = client.get_result()
+        #print '=========================='
+        #print result
         response = svc_response.motion_plan_response
-        print "planner succeeded"
+        # success
         traj = [list(point.positions) for point in response.trajectory.joint_trajectory.points]
         #is_safe = traj_is_safe(traj, robot)
         #if not is_safe: 
@@ -206,7 +241,7 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
             #animate_traj(traj_up, robot)
         return True, response.planning_time, traj
     except rospy.service.ServiceException:
-        print "planner failed"
+        # failure
         return False, np.nan, []
 
 def main():
@@ -254,6 +289,7 @@ def main():
           for i in range(len(states)):
             for j in range(i+1, len(states)):
               problem_joints.append((states[i], states[j]))
+          #for s in states: robot.SetActiveDOFValues(s); env.UpdatePublishedBodies(); raw_input('showing state')
           continue
 
         if "active_dof_values" not in prob["start"] or "active_dof_values" not in prob["goal"]:
@@ -261,6 +297,8 @@ def main():
         problem_joints.append((prob["start"]["active_dof_values"], prob["goal"]["active_dof_values"]))
 
     for start, goal in problem_joints:
+        #robot.SetActiveDOFValues(start); env.UpdatePublishedBodies(); raw_input('showing start'); robot.SetActiveDOFValues(goal); env.UpdatePublishedBodies(); raw_input('showing goal')
+
         robot.SetActiveDOFValues(start)
         success, t_total, traj = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal)
         results.append(
