@@ -4,7 +4,7 @@ parser.add_argument("problemfile",type=argparse.FileType("r"))
 parser.add_argument("-o","--outfile",type=argparse.FileType("w"))
 
 
-parser.add_argument("planner", choices=["trajopt", "ompl"])
+parser.add_argument("planner", choices=["trajopt", "ompl", "chomp"])
 
 parser.add_argument("--interactive", action="store_true")
 parser.add_argument("--multi_init", action="store_true")
@@ -21,6 +21,9 @@ parser.add_argument("--ompl_planner_id", default = "", choices = [
     "BKPIECEkConfigDefault",
     "RRTStarkConfigDefault"])
 parser.add_argument("--max_planning_time", type=float, default=10)
+
+parser.add_argument("--chomp_argstr", default="comp")
+
 args = parser.parse_args()
 
 if args.outfile is None: args.outfile = sys.stdout
@@ -71,6 +74,20 @@ def animate_traj(traj, robot, pause=True, restore=True):
         robot.SetActiveDOFValues(dofs)
         if pause: viewer.Idle()
         else: viewer.Step()
+def traj_to_array(traj):
+  return traj.GetWaypoints(0, traj.GetNumWaypoints()).reshape((traj.GetNumWaypoints(), -1))
+
+def hash_env(env):
+    # hash based on non-robot object transforms and geometries
+    import hashlib
+    return hashlib.sha1(','.join(str(body.GetTransform()) + body.GetKinematicsGeometryHash() for body in env.GetBodies() if not body.IsRobot())).hexdigest()
+
+#def hash_robot(robot):
+#    return str(robot.GetActiveDOFValues()) + str(robot.GetActiveDOFIndices()) + str(robot.GetTransform()) + robot.GetKinematicsGeometryHash()
+
+#def hash_robot_and_env(robot):
+#    import hashlib
+#    return hashlib.sha1(hash_env(robot.GetEnv()) + hash_robot(robot)).hexdigest()
 
 @fu.once
 def get_ompl_service():
@@ -82,30 +99,31 @@ def get_ompl_service():
     print "ok"
     return svc
 
-#@fu.once
-#def get_ompl_action_client():
-#    import rospy
-#    import moveit_msgs.msg as mm
-#    import actionlib
-#    print "waiting for move_group"
-#    client = actionlib.SimpleActionClient("move_group", mm.MoveGroupAction)
-#    client.wait_for_server()
-#    print "ok"
-#    return client
-
 def setup_ompl(env):        
     import rospy
     rospy.init_node("benchmark_ompl",disable_signals=True)    
     get_ompl_service()
-    #get_ompl_action_client()
     rave_env_to_ros(env)
-    
+
+@fu.once
+def get_chomp_module(env):
+    from orcdchomp import orcdchomp
+    CHOMP_MODULE_PATH = '/home/jonathan/build/chomp/liborcdchomp.so'
+    openravepy.RaveLoadPlugin(CHOMP_MODULE_PATH)
+    m_chomp = openravepy.RaveCreateModule(env, 'orcdchomp')
+    env.Add(m_chomp, True, 'blah_load_string')
+    orcdchomp.bind(m_chomp)
+    return m_chomp
+
+def setup_chomp(env):
+    get_chomp_module(env)
+
 
 def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joints):
     
     start_joints = robot.GetActiveDOFValues()
     
-    n_steps = 41
+    n_steps = 11
     coll_coeff = 10
     dist_pen = .02
     
@@ -123,6 +141,7 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
     t_start = time()
     t_verify = 0
     t_opt = 0
+    msg = ''
     
     for (i_init,waypoint) in enumerate(joint_waypoints):
         d = {
@@ -176,16 +195,13 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
         is_safe = traj_is_safe(traj, robot)
         t_verify += time() - t_start_verify
         
-        if not is_safe:                       
-            print "optimal trajectory has a collision. trying a new initialization"
-        else:
-            print "planning successful after %s initialization"%(i_init+1)
+        if is_safe:
+            msg = "planning successful after %s initialization"%(i_init+1)
             success = True
             break
-    if success == False: 
-        print "fail"
     t_total = time() - t_start
-    return success, t_total, [row.tolist() for row in traj]
+
+    return success, t_total, [row.tolist() for row in traj], msg
 
 def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_values):
     
@@ -193,12 +209,10 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
     from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros
     import rospy
     ps = rave_env_to_ros(robot.GetEnv())
-    #msg = mm.MoveGroupActionGoal()
     msg = mm.MotionPlanRequest()
-    #msg.goal.planning_options.plan_only = True
     msg.group_name = group_name
     msg.planner_id = args.ompl_planner_id
-    msg.allowed_planning_time = 10
+    msg.allowed_planning_time = args.max_planning_time
     c = mm.Constraints()
     joints = robot.GetJoints()
     #joint_inds = robot.GetManipulator(manip_name).GetArmIndices()
@@ -217,17 +231,10 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
     msg.start_state = ps.robot_state
     msg.goal_constraints = [c]
     #req.allowed_planning_time = rospy.Duration(args.max_planning_time)
-    #client = get_ompl_action_client()
     svc = get_ompl_service()
     try:
         t_start = time()
-        #print msg
         svc_response = svc.call(msg)
-        #client.send_goal(msg.goal)
-        #client.wait_for_result()
-        #result = client.get_result()
-        #print '=========================='
-        #print result
         response = svc_response.motion_plan_response
         # success
         traj = [list(point.positions) for point in response.trajectory.joint_trajectory.points]
@@ -239,32 +246,84 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
             #n=100
             #traj_up = mu.interp2d(np.linspace(0,1,n), np.linspace(0,1,len(traj)), traj)            
             #animate_traj(traj_up, robot)
-        return True, response.planning_time, traj
+        return True, response.planning_time, traj, ''
     except rospy.service.ServiceException:
         # failure
-        return False, np.nan, []
+        return False, np.nan, [], ''
 
-def main():
+def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_values):
+    if active_affine != 0:
+        raise NotImplementedError("chomp probably doesn't work with affine dofs")
+    openravepy.RaveSetDebugLevel(openravepy.DebugLevel.Warn)
+    m_chomp = get_chomp_module(robot.GetEnv())
 
-    problemset = yaml.load(args.problemfile)
+    datadir = 'chomp_data'
+    n_points = 11
+
+    env_hash = hash_env(robot.GetEnv())
+
+    # load distance field
+    j1idxs = [m.GetArmIndices()[0] for m in robot.GetManipulators()]
+    for link in robot.GetLinks():
+        for j1idx in j1idxs:
+            if robot.DoesAffect(j1idx, link.GetIndex()):
+                link.Enable(False)
+    try:
+        m_chomp.computedistancefield(kinbody=robot, aabb_padding=1.0,
+          cache_filename='%s/chomp-sdf-%s.dat' % (datadir, env_hash))
+    except Exception, e:
+        print 'Exception in computedistancefield:', repr(e)
+    for link in robot.GetLinks():
+        link.Enable(True)
+
+    # run chomp
+    t_start = time()
+    if args.chomp_argstr == 'comp':
+      traj = m_chomp.runchomp(robot=robot, n_iter=1000000, max_time=args.max_planning_time,
+        lambda_=100.0, adofgoal=target_dof_values, no_collision_exception=True,
+        no_collision_check=True, n_points=n_points)
+
+    elif args.chomp_argstr.startswith('hmc-seed'):
+      seed = int(args.chomp_argstr[len('hmc-seed'):])
+      print 'Using seed:', seed
+      traj = m_chomp.runchomp(robot=robot, n_iter=10000, max_time=args.max_planning_time,
+        lambda_=100.0, adofgoal=target_dof_values, no_collision_exception=True,
+        use_momentum=True, use_hmc=True, seed=seed,
+        no_collision_check=True, n_points=n_points)
+
+    else:
+        raise RuntimeError('must be chomp-seedXXXX')
+    t_total = time() - t_start
+
+    traj = traj_to_array(traj)
+    is_safe = traj_is_safe(traj, robot)
+
+    return is_safe, t_total, traj, ''
+
+
+def init_env(problemset):
     env = openravepy.Environment()
     env.StopSimulation()
     
+    robot2file = {
+        "pr2":"robots/pr2-beta-static.zae"
+    }
+
     if args.planner == "trajopt":
         if args.interactive: trajoptpy.SetInteractive(True)      
         plan_func = trajopt_plan
     elif args.planner == "ompl":
         setup_ompl(env)
         plan_func = ompl_plan
-        
-    
+    elif args.planner == "chomp":
+        setup_chomp(env)
+        robot2file["pr2"] = osp.join(pbc.envfile_dir, "pr2_with_spheres.robot.xml") # chomp needs a robot with spheres
+        plan_func = chomp_plan
+
     env.Load(osp.join(pbc.envfile_dir,problemset["env_file"]))
-    robot2file = {
-        "pr2":"robots/pr2-beta-static.zae"
-    }
     env.Load(robot2file[problemset["robot_name"]])
     robot = env.GetRobots()[0]
-    
+
     robot.SetTransform(openravepy.matrixFromPose(problemset["default_base_pose"]))
     rave_joint_names = [joint.GetName() for joint in robot.GetJoints()]
     rave_inds, rave_values = [],[]
@@ -276,11 +335,15 @@ def main():
                         
     robot.SetDOFValues(rave_values, rave_inds)
     active_joint_inds = [rave_joint_names.index(name) for name in problemset["active_joints"]]
-        
-    results = []
-
     robot.SetActiveDOFs(active_joint_inds, problemset["active_affine"])
 
+    return env, robot, plan_func
+
+def main():
+    problemset = yaml.load(args.problemfile)
+    env, robot, plan_func = init_env(problemset)
+
+    # enumerate the problems
     problem_joints = []
     for prob in problemset["problems"]:
         # special "all_pairs" problem type
@@ -289,29 +352,28 @@ def main():
           for i in range(len(states)):
             for j in range(i+1, len(states)):
               problem_joints.append((states[i], states[j]))
-          #for s in states: robot.SetActiveDOFValues(s); env.UpdatePublishedBodies(); raw_input('showing state')
           continue
 
         if "active_dof_values" not in prob["start"] or "active_dof_values" not in prob["goal"]:
           raise NotImplementedError
         problem_joints.append((prob["start"]["active_dof_values"], prob["goal"]["active_dof_values"]))
 
-    for start, goal in problem_joints:
-        #robot.SetActiveDOFValues(start); env.UpdatePublishedBodies(); raw_input('showing start'); robot.SetActiveDOFValues(goal); env.UpdatePublishedBodies(); raw_input('showing goal')
 
+    # solve the problems
+    results = []
+    for i, (start, goal) in enumerate(problem_joints):
         robot.SetActiveDOFValues(start)
-        success, t_total, traj = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal)
-        results.append(
-            {"success": success,
-             "time": t_total,
-             #"traj": traj
-             })
+        success, t_total, traj, msg = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal)
+        print '[%d/%d] %s' % (i+1, len(problem_joints), ('success' if success else 'FAILURE') + (': ' + msg if msg else ''))
+        res = {"success": success, "time": t_total}
+        if args.outfile is not None:
+            res["traj"] = traj
+        results.append(res)
 
     print "success rate: %i/%i"%(np.sum(result["success"] for result in results), len(results))
+
     yaml.dump(results, args.outfile)
-        
-    
-             
+
 
 if __name__ == "__main__":
     main()

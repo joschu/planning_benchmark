@@ -1,0 +1,21 @@
+configurations:
+  - name: trajopt
+    planner: trajopt
+  - name: trajopt_multi_init
+    planner: trajopt
+    args: ["--multi_init"]
+
+  - name: ompl_RRTConnect
+    planner: ompl
+    args: ["--ompl_planner_id=RRTConnectkConfigDefault"]
+
+  - name: chomp
+    planner: chomp
+    args: ["--chomp_argstr=comp", "--max_planning_time=5"]
+  - name: chomp_hmc
+    planner: chomp
+    args: ["--chomp_argstr=hmc-seed0", "--max_planning_time=5"]
+
+problem_sets:
+  - bookshelves_rightarm.yaml
+  - countertop_rightarm.yaml
