@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Robot name="pr2">
+  <KinBody file="robots/pr2-beta-static.zae">
+  <orcdchomp>
+    <spheres>
+      <sphere link="r_shoulder_pan_link" pos="0.090000 0.000000 0.000000" radius="0.180000"/>
+
+      <sphere link="r_upper_arm_roll_link" pos="0.180000 0.000000 -0.015000" radius="0.110000"/>
+      <sphere link="r_upper_arm_roll_link" pos="0.260000 0.000000 -0.035000" radius="0.080000"/>
+      <sphere link="r_upper_arm_roll_link" pos="0.327500 0.000000 -0.035000" radius="0.080000"/>
+      <sphere link="r_upper_arm_roll_link" pos="0.400000 0.000000 -0.000000" radius="0.105000"/>
+
+      <sphere link="r_forearm_roll_link" pos="0.130000 0.000000 0.005000" radius="0.075000"/>
+      <sphere link="r_forearm_roll_link" pos="0.200000 0.025000 -0.010000" radius="0.055000"/>
+      <sphere link="r_forearm_roll_link" pos="0.200000 -0.025000 -0.010000" radius="0.055000"/>
+      <sphere link="r_forearm_roll_link" pos="0.265000 0.027500 -0.015000" radius="0.050000"/>
+      <sphere link="r_forearm_roll_link" pos="0.265000 -0.027500 -0.015000" radius="0.050000"/>
+      <sphere link="r_forearm_roll_link" pos="0.320000 0.022500 -0.005000" radius="0.050000"/>
+      <sphere link="r_forearm_roll_link" pos="0.320000 -0.022500 -0.005000" radius="0.050000"/>
+
+      <sphere link="r_wrist_roll_link" pos="0.072500 -0.017500 0.000000" radius="0.040000"/>
+      <sphere link="r_wrist_roll_link" pos="0.072500 0.017500 0.000000" radius="0.040000"/>
+      <sphere link="r_wrist_roll_link" pos="0.092500 0.000000 0.000000" radius="0.040000"/>
+
+      <sphere link="r_gripper_l_finger_link" pos="0.030000 0.025000 0.000000" radius="0.040000"/>
+      <sphere link="r_gripper_l_finger_link" pos="0.080000 0.017500 0.000000" radius="0.035000"/>
+      <sphere link="r_gripper_l_finger_tip_link" pos="0.015000 -0.005000 0.000000" radius="0.030000"/>
+      <sphere link="r_gripper_l_finger_tip_link" pos="0.035000 -0.005000 0.000000" radius="0.020000"/>
+
+      <sphere link="r_gripper_r_finger_link" pos="0.030000 -0.025000 0.000000" radius="0.040000"/>
+      <sphere link="r_gripper_r_finger_link" pos="0.080000 -0.017500 0.000000" radius="0.035000"/>
+      <sphere link="r_gripper_r_finger_tip_link" pos="0.015000 0.005000 0.000000" radius="0.030000"/>
+      <sphere link="r_gripper_r_finger_tip_link" pos="0.035000 0.005000 0.000000" radius="0.020000"/>
+
+    </spheres>
+  </orcdchomp>
+  </KinBody>
+</Robot>
