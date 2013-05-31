@@ -45,9 +45,9 @@ while True:
     else:
       robot.SetActiveDOFValues(prob["start"]["active_dof_values"])
       env.UpdatePublishedBodies()
-      raw_input('showing start state')
+      raw_input('showing start state: %s' % str(prob["start"]["active_dof_values"]))
       robot.SetActiveDOFValues(prob["goal"]["active_dof_values"])
       env.UpdatePublishedBodies()
-      raw_input('showing goal state')
+      raw_input('showing goal state: %s' % str(prob["goal"]["active_dof_values"]))
     print '===================='
   raw_input('showed all states, now looping...')
