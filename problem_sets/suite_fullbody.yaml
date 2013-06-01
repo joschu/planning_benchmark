@@ -1,0 +1,25 @@
+configurations:
+  - name: trajopt
+    planner: trajopt
+    args: ["--n_steps=41"]
+  - name: trajopt-no_selfcoll_first
+    planner: trajopt
+    args: ["--trajopt_no_selfcoll_first", "--n_steps=41"]
+  - name: trajopt-multi_init
+    planner: trajopt
+    args: ["--multi_init", "--n_steps=41"]
+  - name: trajopt-no_selfcoll_first-multi_init
+    planner: trajopt
+    args: ["--trajopt_no_selfcoll_first", "--multi_init", "--n_steps=41"]
+
+  - name: ompl-RRTConnect
+    planner: ompl
+    args: ["--ompl_planner_id=RRTConnectkConfigDefault", "--max_planning_time=30"]
+  - name: ompl-LBKPIECE
+    planner: ompl
+    args: ["--ompl_planner_id=LBKPIECEkConfigDefault", "--max_planning_time=30"]
+
+problem_sets:
+  - kitchen_fullbody.yaml
+  - kitchen_fullbody_10.yaml
+  - living_room.yaml

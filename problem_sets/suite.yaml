@@ -11,6 +11,19 @@ configurations:
     planner: trajopt
     args: ["--trajopt_no_selfcoll_first", "--multi_init"]
 
+# - name: trajopt-dp04
+#   planner: trajopt
+#   args: ["--trajopt_dist_pen=.04"]
+# - name: trajopt-no_selfcoll_first-dp04
+#   planner: trajopt
+#   args: ["--trajopt_no_selfcoll_first", "--trajopt_dist_pen=.04"]
+# - name: trajopt-multi_init-dp04
+#   planner: trajopt
+#   args: ["--multi_init", "--trajopt_dist_pen=.04"]
+# - name: trajopt-no_selfcoll_first-multi_init-dp04
+#   planner: trajopt
+#   args: ["--trajopt_no_selfcoll_first", "--multi_init", "--trajopt_dist_pen=.04"]
+
   - name: ompl-RRTConnect
     planner: ompl
     args: ["--ompl_planner_id=RRTConnectkConfigDefault"]

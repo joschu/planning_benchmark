@@ -3,7 +3,8 @@ import geometry_msgs.msg as gm
 import roslib.message as rm
 import yaml
 import os.path as osp
-import planning_benchmark_common as pbc
+import sys, os
+sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_common as pbc
 import shape_msgs.msg as sm
 import geometry_msgs.msg as gm
 import rospy
@@ -33,6 +34,16 @@ def RosTransformFromRaveMatrix(mat):
     qw,qx,qy,qz = openravepy.quatFromRotationMatrix(mat[:3,:3])
     out.rotation = gm.Quaternion(qx,qy,qz, qw)
     return out
+
+def ros_joints_to_rave(robot, ros_joint_names, ros_joint_vals):
+    assert len(ros_joint_names) == len(ros_joint_vals)
+    rave_joint_names = (joint.GetName() for joint in robot.GetJoints())
+    rave_joint_inds, rave_joint_vals = [], []
+    for i, name in enumerate(rave_joint_names):
+        if name in ros_joint_names:
+            rave_joint_inds.append(i)
+            rave_joint_vals.append(ros_joint_vals[ros_joint_names.index(name)])
+    return rave_joint_vals, rave_joint_inds
 
 def rave_env_to_ros(env):
     
@@ -75,17 +86,30 @@ def rave_env_to_ros(env):
             for link in body.GetLinks():
                 co = mm.CollisionObject()
                 co.operation = co.ADD
+                co.id = body.GetName()
+                co.header.frame_id = "odom_combined"
+                co.header.stamp = rospy.Time.now()
                 for geom in link.GetGeometries():
-                    shape = sm.SolidPrimitive()
-                    shape.type = shape.BOX
-                    shape.dimensions = geom.GetBoxExtents()*2
-                    co.primitives.append(shape)
-                    co.primitive_poses.append(RosPoseFromRaveMatrix(body.GetTransform().dot(link.GetTransform().dot(geom.GetTransform()))))
-            co.id = body.GetName()
-            cos.append(co)
-            co.header.frame_id = "odom_combined"
-            co.header.stamp = rospy.Time.now()
-            
+                    trans = RosPoseFromRaveMatrix(body.GetTransform().dot(link.GetTransform().dot(geom.GetTransform())))
+                    if geom.GetType() == openravepy.GeometryType.Trimesh:
+                        mesh = sm.Mesh()
+                        rave_mesh = geom.GetCollisionMesh()
+                        for pt in rave_mesh.vertices:
+                            mesh.vertices.append(gm.Point(*pt))
+                        for tri in rave_mesh.indices:
+                            mt = sm.MeshTriangle()
+                            mt.vertex_indices = tri
+                            mesh.triangles.append(mt)
+                        co.meshes.append(mesh)
+                        co.mesh_poses.append(trans)
+                    else:
+                        shape = sm.SolidPrimitive()
+                        shape.type = shape.BOX
+                        shape.dimensions = geom.GetBoxExtents()*2
+                        co.primitives.append(shape)
+                        co.primitive_poses.append(trans)
+                cos.append(co)
+
     pub.publish(ps)
     return ps
             
@@ -93,7 +117,7 @@ if __name__ == "__main__":
     rospy.init_node("rave_env_to_ros")
     env = openravepy.Environment()
     env.Load("robots/pr2-beta-static.zae")
-    env.Load("/home/joschu/Proj/planning_bench/planning_benchmark/pr2_scenes_xml/bookshelves.env.xml")
+    env.Load(sys.argv[1])
     robot  = env.GetRobots()[0]
     tf = robot.GetTransform()
     tf[:3,3]=[1,1,0]

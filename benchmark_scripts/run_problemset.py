@@ -10,6 +10,7 @@ parser.add_argument("planner", choices=["trajopt", "ompl", "chomp"])
 parser.add_argument("--animate_all", action="store_true", help="animate solutions to every problem after solving")
 parser.add_argument("--multi_init", action="store_true", help="use multiple initializations, for trajopt and chomp")
 parser.add_argument("--max_planning_time", type=float, default=10, help="max planning time for chomp and ompl")
+parser.add_argument("--n_steps", type=int, default=11, help="num steps for trajopt and chomp")
 
 # trajopt options
 parser.add_argument("--interactive", action="store_true")
@@ -40,7 +41,7 @@ import os
 import os.path as osp
 sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_common as pbc
 from trajoptpy.check_traj import traj_is_safe, traj_collisions
-from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros
+from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros, ros_joints_to_rave
 import trajoptpy.math_utils as mu
 from time import time
 import numpy as np
@@ -126,6 +127,8 @@ def hash_env(env):
     # hash based on non-robot object transforms and geometries
     import hashlib
     return hashlib.sha1(','.join(str(body.GetTransform()) + body.GetKinematicsGeometryHash() for body in env.GetBodies() if not body.IsRobot())).hexdigest()
+def ros_quat_to_aa(q):
+    return openravepy.axisAngleFromQuat([q.w, q.x, q.y, q.z])
 
 @fu.once
 def get_ompl_service():
@@ -157,12 +160,16 @@ def setup_chomp(env):
     get_chomp_module(env)
 
 
-def gen_init_trajs(robot, group_name, n_steps, start_joints, end_joints):
+def gen_init_trajs(problemset, robot, n_steps, start_joints, end_joints):
     waypoint_step = (n_steps - 1)// 2
     joint_waypoints = [(np.asarray(start_joints) + np.asarray(end_joints))/2]
     if args.multi_init:
-        if group_name in ["right_arm", "left_arm", "whole_body"]:
-            joint_waypoints.extend(get_postures(group_name))
+        # if the problem file has waypoints, just use those
+        if "midpoints" in problemset:
+            joint_waypoints.extend(problemset["midpoints"])
+        else:
+            if problemset["group_name"] in ["right_arm", "left_arm", "whole_body"]:
+                joint_waypoints.extend(get_postures(problemset["group_name"]))
     trajs = []
     for i, waypoint in enumerate(joint_waypoints):
         if i == 0:
@@ -209,10 +216,10 @@ def make_trajopt_request(n_steps, coll_coeff, dist_pen, end_joints, inittraj, us
     return json.dumps(d)
 
 
-def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joints):
+def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joints, init_trajs):
     start_joints = robot.GetActiveDOFValues()
 
-    n_steps = 11
+    n_steps = args.n_steps
     coll_coeff = 10
     dist_pen = args.trajopt_dist_pen
 
@@ -224,7 +231,7 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
         prob.SetRobotActiveDOFs()
         return traj, traj_is_safe(traj, robot) #and (use_discrete_collision or traj_no_self_collisions(traj, robot))
 
-    init_trajs = gen_init_trajs(robot, group_name, n_steps, start_joints, end_joints)
+    #init_trajs = gen_init_trajs(problemset, robot, group_name, n_steps, start_joints, end_joints)
     success = False
     msg = ''
     t_start = time()
@@ -235,9 +242,14 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
                 msg = "planning successful after %s initialization (no self collisions)"%(i_init+1)
                 success = True
                 break
+            traj, is_safe = single_trial(traj, True)
+            if is_safe:
+                msg = "planning successful after %s initialization (with self collisions, initialization from no-self-collisions)"%(i_init+1)
+                success = True
+                break
             traj, is_safe = single_trial(inittraj, True)
             if is_safe:
-                msg = "planning successful after %s initialization (with self collisions)"%(i_init+1)
+                msg = "planning successful after %s initialization (with self collisions, original initialization)"%(i_init+1)
                 success = True
                 break
         else:
@@ -250,7 +262,7 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
 
     return success, t_total, [row.tolist() for row in traj], msg
 
-def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_values):
+def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_values, init_trajs):
     
     import moveit_msgs.msg as mm
     from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros
@@ -272,8 +284,6 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
         raise Exception
     for (name, val) in zip(active_joint_names+base_joint_names, target_dof_values):
         c.joint_constraints.append(mm.JointConstraint(joint_name=name, position = val,weight=1,tolerance_above=.0001, tolerance_below=.0001))
-                                   
-    jc = mm.JointConstraint()
 
     msg.start_state = ps.robot_state
     msg.goal_constraints = [c]
@@ -284,8 +294,18 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
         svc_response = svc.call(msg)
         response = svc_response.motion_plan_response
         # success
-        traj = [list(point.positions) for point in response.trajectory.joint_trajectory.points]
-        #is_safe = traj_is_safe(traj, robot)
+        joint_names = response.trajectory.joint_trajectory.joint_names
+        pts = response.trajectory.joint_trajectory.points
+        base_pts = response.trajectory.multi_dof_joint_trajectory.points
+        traj = []
+        for i, p in enumerate(pts):
+            row = ros_joints_to_rave(robot, joint_names, p.positions)[0]
+            if base_pts:
+              base_trans = base_pts[i].transforms[0]
+              row += [base_trans.translation.x, base_trans.translation.y]
+              row += [ros_quat_to_aa(base_trans.rotation)[2]]
+            traj.append(row)
+        traj = np.asarray(traj)
         #if not is_safe: 
             #print "Openrave thinks it's not safe!!! animating"
             #col_times = traj_collisions(traj, robot)
@@ -294,13 +314,12 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
             #traj_up = mu.interp2d(np.linspace(0,1,n), np.linspace(0,1,len(traj)), traj)            
             #animate_traj(traj_up, robot)
         return True, response.planning_time, traj, ''
-    except rospy.service.ServiceException:
-        # failure
-        return False, np.nan, [], ''
+    except rospy.service.ServiceException, e:
+        return False, time() - t_start, [], 'failed due to ServiceException: ' + repr(e)
 
-def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_values):
+def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_values, init_trajs):
     datadir = 'chomp_data'
-    n_points = 11
+    n_points = args.n_steps
 
     if active_affine != 0:
         raise NotImplementedError("chomp probably doesn't work with affine dofs")
@@ -346,7 +365,7 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
     t_start = time()
     is_safe = False
     if args.multi_init:
-        init_trajs = gen_init_trajs(robot, group_name, n_points, start_joints, target_dof_values)
+        #init_trajs = gen_init_trajs(robot, group_name, n_points, start_joints, target_dof_values)
         for i_init, inittraj in enumerate(init_trajs):
             t = kwargs["starttraj"] = array_to_traj(robot, inittraj)
             traj = traj_to_array(m_chomp.runchomp(**kwargs))
@@ -428,7 +447,8 @@ def main():
     failed = []
     for i, (start, goal) in enumerate(problem_joints):
         robot.SetActiveDOFValues(start)
-        success, t_total, traj, msg = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal)
+        init_trajs = gen_init_trajs(problemset, robot, args.n_steps, start, goal)
+        success, t_total, traj, msg = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal, init_trajs)
         print '%s[%d/%d] %s%s' % (bcolors.OKGREEN if success else bcolors.FAIL, i+1, len(problem_joints), ('success' if success else 'FAILURE') + (': ' + msg if msg else ''), bcolors.ENDC)
         res = {"success": success, "time": t_total}
         if args.outfile is not sys.stdout:

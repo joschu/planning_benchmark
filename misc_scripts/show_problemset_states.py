@@ -7,6 +7,7 @@ sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_c
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("problemfile",type=argparse.FileType("r"))
+parser.add_argument("--show_midpoints", action="store_true")
 args = parser.parse_args()
 
 problemset = yaml.load(args.problemfile)
@@ -34,20 +35,25 @@ robot.SetActiveDOFs(active_joint_inds, problemset["active_affine"])
 
 env.SetViewer('qtcoin')
 while True:
-  for prob in problemset["problems"]:
-    # special "all_pairs" problem type
-    if "all_pairs" in prob:
-      states = prob["all_pairs"]["active_dof_values"]
-      for i, s in enumerate(states):
-        robot.SetActiveDOFValues(s)
+  if args.show_midpoints:
+    for i, s in enumerate(problemset["midpoints"]):
+      robot.SetActiveDOFValues(s)
+      raw_input('showing midpoint %d/%d' % (i+1, len(problemset["midpoints"])))
+  else:
+    for prob in problemset["problems"]:
+      # special "all_pairs" problem type
+      if "all_pairs" in prob:
+        states = prob["all_pairs"]["active_dof_values"]
+        for i, s in enumerate(states):
+          robot.SetActiveDOFValues(s)
+          env.UpdatePublishedBodies()
+          raw_input('showing state %d/%d' % (i+1, len(states)))
+      else:
+        robot.SetActiveDOFValues(prob["start"]["active_dof_values"])
         env.UpdatePublishedBodies()
-        raw_input('showing state %d/%d' % (i+1, len(states)))
-    else:
-      robot.SetActiveDOFValues(prob["start"]["active_dof_values"])
-      env.UpdatePublishedBodies()
-      raw_input('showing start state: %s' % str(prob["start"]["active_dof_values"]))
-      robot.SetActiveDOFValues(prob["goal"]["active_dof_values"])
-      env.UpdatePublishedBodies()
-      raw_input('showing goal state: %s' % str(prob["goal"]["active_dof_values"]))
-    print '===================='
-  raw_input('showed all states, now looping...')
+        raw_input('showing start state: %s' % str(prob["start"]["active_dof_values"]))
+        robot.SetActiveDOFValues(prob["goal"]["active_dof_values"])
+        env.UpdatePublishedBodies()
+        raw_input('showing goal state: %s' % str(prob["goal"]["active_dof_values"]))
+      print '===================='
+    raw_input('showed all states, now looping...')
