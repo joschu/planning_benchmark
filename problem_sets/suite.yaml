@@ -1,15 +1,15 @@
 configurations:
   - name: trajopt
     planner: trajopt
-  - name: trajopt-no_selfcoll_first
-    planner: trajopt
-    args: ["--trajopt_no_selfcoll_first"]
+# - name: trajopt-no_selfcoll_first
+#   planner: trajopt
+#   args: ["--trajopt_no_selfcoll_first"]
   - name: trajopt-multi_init
     planner: trajopt
     args: ["--multi_init"]
-  - name: trajopt-no_selfcoll_first-multi_init
-    planner: trajopt
-    args: ["--trajopt_no_selfcoll_first", "--multi_init"]
+# - name: trajopt-no_selfcoll_first-multi_init
+#   planner: trajopt
+#   args: ["--trajopt_no_selfcoll_first", "--multi_init"]
 
 # - name: trajopt-dp04
 #   planner: trajopt
@@ -31,15 +31,15 @@ configurations:
     planner: ompl
     args: ["--ompl_planner_id=LBKPIECEkConfigDefault"]
 
-  - name: chomp
-    planner: chomp
-    args: ["--chomp_argstr=comp", "--max_planning_time=5"]
+# - name: chomp
+#   planner: chomp
+#   args: ["--chomp_argstr=comp", "--max_planning_time=5"]
   - name: chomp-hmc
     planner: chomp
     args: ["--chomp_argstr=hmc-seed0", "--max_planning_time=5"]
-  - name: chomp-multi_init
-    planner: chomp
-    args: ["--chomp_argstr=comp", "--max_planning_time=5", "--multi_init"]
+# - name: chomp-multi_init
+#   planner: chomp
+#   args: ["--chomp_argstr=comp", "--max_planning_time=5", "--multi_init"]
   - name: chomp-hmc-multi_init
     planner: chomp
     args: ["--chomp_argstr=hmc-seed0", "--max_planning_time=5", "--multi_init"]

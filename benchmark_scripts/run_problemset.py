@@ -16,6 +16,7 @@ parser.add_argument("--n_steps", type=int, default=11, help="num steps for trajo
 parser.add_argument("--interactive", action="store_true")
 parser.add_argument("--trajopt_dist_pen", type=float, default=.02)
 parser.add_argument("--trajopt_no_selfcoll_first", action="store_true")
+parser.add_argument("--use_random_inits", action="store_true")
 
 # ompl options
 parser.add_argument("--ompl_planner_id", default = "", choices = [
@@ -42,6 +43,7 @@ import os.path as osp
 sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_common as pbc
 from trajoptpy.check_traj import traj_is_safe, traj_collisions
 from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros, ros_joints_to_rave
+from planning_benchmark_common.sample_base import sample_base_positions
 import trajoptpy.math_utils as mu
 from time import time
 import numpy as np
@@ -164,8 +166,11 @@ def gen_init_trajs(problemset, robot, n_steps, start_joints, end_joints):
     waypoint_step = (n_steps - 1)// 2
     joint_waypoints = [(np.asarray(start_joints) + np.asarray(end_joints))/2]
     if args.multi_init:
+        if args.use_random_inits:
+            print 'using random initializations'
+            joint_waypoints.extend(sample_base_positions(robot, num=5, tucked=True))
         # if the problem file has waypoints, just use those
-        if "midpoints" in problemset:
+        elif "midpoints" in problemset:
             joint_waypoints.extend(problemset["midpoints"])
         else:
             if problemset["group_name"] in ["right_arm", "left_arm", "whole_body"]:
