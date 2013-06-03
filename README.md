@@ -16,7 +16,13 @@ running a suite will run each of the planners on all of the configurations.
 
 Setup
 =====
-Dependencies:
+The benchmarking code depends on the following packages:
+
+- OpenRAVE, at least version 0.8 (see http://openrave.org/)
+
+- Various Python packages: NumPy, YAML, JSON
+
+Before running the benchmarks, you must install the planners:
 
 - trajopt, the planner described in this paper (see http://rll.berkeley.edu/trajopt/)
 
@@ -26,12 +32,12 @@ Dependencies:
 
 - CHOMP
 
-  make sure that the `orcdchomp` Python package is available in the $PYTHONPATH
+  Note that the CHOMP implementation we use is not publicly available. If you do have access to it,
+  however, then make sure that the `orcdchomp` Python package is available in your `$PYTHONPATH`.
 
 Note that if any of these planners is not available, then it's still possible to run
 the benchmarks excluding the unavailable ones.
 
-Pre-benchmarking:
 Trajopt and CHOMP require no pre-benchmarking setup, but MoveIt/OMPL benchmarks need the
 MoveIt ROS services to be running beforehand. To do this:
 
@@ -40,20 +46,30 @@ MoveIt ROS services to be running beforehand. To do this:
 
 (note that we run MoveIt with the trajectory retimer disabled due to stability issues)
 
+We also recommend setting the following environment variable:
+
+    export TRAJOPT_LOG_THRESH=WARN
+
+to suppress excessive logging output from trajopt.
+
 Running a testing suite
 =======================
-From the root directory of this package, run:
-
-    python benchmark_scripts/run_suite.py $SUITE_FILE -o $RESULTS_FILE.pkl
-
-Provided suite files are
+We provide the following suite files:
 
 - `problem_sets/suite_rightarm.yaml`: arm planning problems for trajopt, OMPL, and CHOMP
 - `problem_sets/suite_fullbody.yaml`: full-body planning problems for trajopt and OMPL
 
-To analyze results of a suite run:
+(If you want to disable planner configurations for any reason, for example due to the unavailability of CHOMP,
+simply remove or comment out the appropriate entries under the `configurations` item in the YAML file.)
 
-    python benchmark_scripts/run_suite.py --summarize=$RESULTS_FILE.pkl
+To run a suite `SUITE_FILE.yaml` and save the planning results to `RESULTS_FILE.pkl`, execute the following command
+from the root directory of this package:
+
+    python benchmark_scripts/run_suite.py SUITE_FILE.yaml -o RESULTS_FILE.pkl
+
+To analyze results in `RESULTS_FILE.pkl`, run:
+
+    python benchmark_scripts/run_suite.py --summarize=RESULTS_FILE.pkl
 
 An example analysis output will look like the following:
 
@@ -87,7 +103,7 @@ Running individual problem sets
 If you want to run an individual planning problem set
 (note that this is what `run_suite.py` does under the hood for each configuration/problemset pair):
 
-    python benchmark_scripts/run_problemset.py $PROBLEM_SET_FILE $PLANNER_NAME $EXTRA_OPTIONS
+    python benchmark_scripts/run_problemset.py PROBLEM_SET_FILE PLANNER_NAME EXTRA_OPTIONS
 
 Provided arm planning problem set files are
 

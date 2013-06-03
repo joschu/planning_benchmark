@@ -50,7 +50,6 @@ import os
 import os.path as osp
 sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_common as pbc
 from trajoptpy.check_traj import traj_is_safe, traj_collisions
-from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros, ros_joints_to_rave
 from planning_benchmark_common.sample_base import sample_base_positions
 import trajoptpy.math_utils as mu
 from time import time
@@ -150,6 +149,7 @@ def get_ompl_service():
 
 def setup_ompl(env):        
     import rospy
+    from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros
     rospy.init_node("benchmark_ompl",disable_signals=True)    
     get_ompl_service()
     rave_env_to_ros(env)
@@ -257,7 +257,7 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
 def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_values, init_trajs):
     
     import moveit_msgs.msg as mm
-    from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros
+    from planning_benchmark_common.rave_env_to_ros import rave_env_to_ros, ros_joints_to_rave
     import rospy
     ps = rave_env_to_ros(robot.GetEnv())
     msg = mm.MotionPlanRequest()
