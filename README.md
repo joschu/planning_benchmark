@@ -2,8 +2,8 @@ Motion Planning Benchmarks
 ==========================
 for the RSS 2013 submission
 
-    Finding Locally Optimal, Collision-Free Trajectories with Sequential Convex Optimization
-    John Schulman, Jonathan Ho, Alex Lee, Ibrahim Awwal, Henry Bradlow and Pieter Abbeel
+**Finding Locally Optimal, Collision-Free Trajectories with Sequential Convex Optimization  
+John Schulman, Jonathan Ho, Alex Lee, Ibrahim Awwal, Henry Bradlow and Pieter Abbeel**
 
 This is a collection of scripts that runs planners--trajopt, OMPL/MoveIt, and CHOMP--on various
 testing scenes in various configurations. All testing scenes use the PR2.
@@ -14,20 +14,19 @@ joint pairs, each of which constitutes a single planning problem. A suite of pro
 is a set of configurations of planners (planner type and arguments) and a list of problem sets--
 running a suite will run each of the planners on all of the configurations.
 
-
 Setup
 =====
 Dependencies:
+
+- trajopt, the planner described in this paper (see http://rll.berkeley.edu/trajopt/)
 
 - ROS, MoveIt (see http://moveit.ros.org/)
 
     sudo apt-get install ros-groovy-moveit-full ros-groovy-moveit-full-pr2
 
-- trajopt (see http://rll.berkeley.edu/trajopt/)
-
 - CHOMP
 
-  make sure that the 'orcdchomp' Python package is available in the $PYTHONPATH
+  make sure that the `orcdchomp` Python package is available in the $PYTHONPATH
 
 Note that if any of these planners is not available, then it's still possible to run
 the benchmarks excluding the unavailable ones.
@@ -49,8 +48,8 @@ From the root directory of this package, run:
 
 Provided suite files are
 
-    - problem_sets/suite_rightarm.yaml (arm planning problems for trajopt, OMPL, and CHOMP)
-    - problem_sets/suite_fullbody.yaml (full-body planning problems for trajopt and OMPL)
+- `problem_sets/suite_rightarm.yaml`: arm planning problems for trajopt, OMPL, and CHOMP
+- `problem_sets/suite_fullbody.yaml`: full-body planning problems for trajopt and OMPL
 
 To analyze results of a suite run:
 
@@ -78,33 +77,33 @@ The row names mean the following:
   - `success_frac`: Fraction of problems solved with valid, collision-free trajectories
   - `avg_abs_path_len`: Average joint-space path length among successful problems
   - `avg_normed_path_len`: Average normalized joint-space path length among successful problems.
-    The normalized length of a trajectory for a particular single problem is defined as the absolute length
+    The normalized length of a trajectory for a single problem is defined as its absolute length
     divided by the minimum length for that problem across all planner configurations.
   - `avg_time`: Average time for planner to finish, for both successful and unsuccessful problems
 
 
-Running individual planning problem sets
-========================================
-If you want to run an individual planning problem set:
-(note that this is what run_suite.py does under the hood for each configuration/problemset pair)
+Running individual problem sets
+===============================
+If you want to run an individual planning problem set
+(note that this is what `run_suite.py` does under the hood for each configuration/problemset pair):
 
     python benchmark_scripts/run_problemset.py $PROBLEM_SET_FILE $PLANNER_NAME $EXTRA_OPTIONS
 
 Provided arm planning problem set files are
 
-    - problem_sets/bookshelves_rightarm.yaml
-    - problem_sets/countertop_rightarm.yaml
-    - problem_sets/industrial_rightarm.yaml
-    - problem_sets/industrial_rightarm2.yaml
-    - problem_sets/tunnel_rightarm.yaml
+- `problem_sets/bookshelves_rightarm.yaml`
+- `problem_sets/countertop_rightarm.yaml`
+- `problem_sets/industrial_rightarm.yaml`
+- `problem_sets/industrial_rightarm2.yaml`
+- `problem_sets/tunnel_rightarm.yaml`
 
 and provided full-body planning problem set files are
 
-    - problem_sets/kitchen_fullbody.yaml
-    - problem_sets/kitchen_fullbody_10.yaml
-    - problem_sets/living_room.yaml (environment courtesy of http://sketchup.google.com/3dwarehouse/details?mid=7eaee5ac64047976e7b3e201635a5735)
+- `problem_sets/kitchen_fullbody.yaml`
+- `problem_sets/kitchen_fullbody_10.yaml`
+- `problem_sets/living_room.yaml` (environment courtesy of http://sketchup.google.com/3dwarehouse/details?mid=7eaee5ac64047976e7b3e201635a5735)
 
-The supported planners are 'trajopt', 'chomp', and 'ompl'. Extra options can be provided to
+The supported planners are `trajopt`, `chomp`, and `ompl`. Extra options can be provided to
 configure the behavior of the planners. For details, run
 
-    python benchamark_scripts/run_problemset.py --help
+    python benchmark_scripts/run_problemset.py --help
