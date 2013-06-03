@@ -1,23 +1,32 @@
 import argparse,sys
 parser = argparse.ArgumentParser()
-parser.add_argument("problemfile",type=argparse.FileType("r"))
-parser.add_argument("-o","--outfile",type=argparse.FileType("w"))
-parser.add_argument("--record_failed_problems", type=argparse.FileType("w"))
-parser.add_argument("--problems", type=argparse.FileType("r"), help="ignore the problems in problemfile and use these only (good for output from --record_failed_problems)")
 
-parser.add_argument("planner", choices=["trajopt", "ompl", "chomp"])
+g0 = parser.add_argument_group('common', 'Common args')
+g0.add_argument("problemfile",type=argparse.FileType("r"), help="Problem description YAML file")
+g0.add_argument("planner", choices=["trajopt", "ompl", "chomp"], help="Planner to run")
+g0.add_argument("-o","--outfile",type=argparse.FileType("w"), help="File to dump results (generated trajectories, timing info, etc.)")
+g0.add_argument("--record_failed_problems", type=argparse.FileType("w"), help="File to save failed start/goal pairs")
+g0.add_argument("--problems", type=argparse.FileType("r"), help="ignore the problems in problemfile and use these only (good for output from --record_failed_problems)")
+g0.add_argument("--animate_all", action="store_true", help="animate solutions to every problem after solving")
 
-parser.add_argument("--animate_all", action="store_true", help="animate solutions to every problem after solving")
-parser.add_argument("--multi_init", action="store_true", help="use multiple initializations, for trajopt and chomp")
-parser.add_argument("--max_planning_time", type=float, default=10, help="max planning time for chomp and ompl")
-parser.add_argument("--n_steps", type=int, default=11, help="num steps for trajopt and chomp")
+# chomp+ompl options
+g1 = parser.add_argument_group('chomp+ompl', 'Options for CHOMP and OMPL')
+g1.add_argument("--max_planning_time", type=float, default=10, help="max planning time for chomp and ompl")
+
+# trajopt+chomp options
+g2 = parser.add_argument_group("trajopt+chomp", "Options for optimization-based planners (trajopt and CHOMP)")
+g2.add_argument("--n_steps", type=int, default=11, help="num steps in generated trajectory for trajopt and chomp")
+g2.add_argument("--multi_init", action="store_true", help="Use multiple initializations, for trajopt and chomp")
+g2.add_argument("--use_random_inits", action="store_true", help="Use 5 random collision-free states for initializations. Only active if --multi_init is passed too")
 
 # trajopt options
-parser.add_argument("--interactive", action="store_true")
-parser.add_argument("--use_random_inits", action="store_true")
+g3 = parser.add_argument_group("trajopt-only", "Options specific to trajopt")
+g3.add_argument("--interactive", action="store_true", help="Interactively display steps in the optimization")
 
 # ompl options
-parser.add_argument("--ompl_planner_id", default = "", choices = [
+g4 = parser.add_argument_group("ompl-only", "Options specific to OMPL")
+g4.add_argument("--ompl_planner_id", default = "", help="OMPL planner ID",
+  choices = [
     "",
     "SBLkConfigDefault",
     "LBKPIECEkConfigDefault",
@@ -29,7 +38,8 @@ parser.add_argument("--ompl_planner_id", default = "", choices = [
     "RRTStarkConfigDefault"])
 
 # chomp options
-parser.add_argument("--chomp_argstr", default="comp")
+g5 = parser.add_argument_group("chomp-only", "Options specific to CHOMP")
+g5.add_argument("--chomp_argstr", default="comp", help="CHOMP arg string. Can be 'comp' or 'hmc-seedXXXX'")
 
 args = parser.parse_args()
 

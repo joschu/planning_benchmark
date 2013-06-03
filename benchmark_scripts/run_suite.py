@@ -8,8 +8,8 @@ import tempfile
 import yaml
 
 parser = argparse.ArgumentParser()
-parser.add_argument("suitefile", type=argparse.FileType("r"), nargs="?")
-parser.add_argument("-o","--outfile",type=argparse.FileType("w"))
+parser.add_argument("suitefile", type=argparse.FileType("r"), nargs="?", help="Suite description YAML file")
+parser.add_argument("-o","--outfile",type=argparse.FileType("w"), help="File to dump results for --summarize")
 parser.add_argument("--summarize", type=argparse.FileType("r"), help="take the input to be the output of a previous run, and display the summmary only")
 args = parser.parse_args()
 
