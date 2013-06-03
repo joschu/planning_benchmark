@@ -1,0 +1,33 @@
+<launch>
+
+  <include file="$(find pr2_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <node name="move_group" launch-prefix="" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="">
+    <!-- Set the display variable, in case OpenGL code is used internally -->
+    <env name="DISPLAY" value="$(optenv DISPLAY :0)" />
+
+    <param name="allow_trajectory_execution" value="false" />
+    <param name="max_safe_path_cost" value="1" />
+    <param name="jiggle_fraction" value="0.05" />
+
+    <param name="capabilities" value="move_group/MoveGroupCartesianPathService
+				      move_group/MoveGroupExecuteService
+				      move_group/MoveGroupKinematicsService
+				      move_group/MoveGroupMoveAction
+				      move_group/MoveGroupPickPlaceAction
+				      move_group/MoveGroupPlanService
+				      move_group/MoveGroupQueryPlannersService
+				      move_group/MoveGroupStateValidationService
+				      move_group/MoveGroupGetPlanningSceneService
+				      " />
+
+    <param name="request_adapters" value="default_planner_request_adapters/FixWorkspaceBounds
+              default_planner_request_adapters/FixStartStateBounds
+              default_planner_request_adapters/FixStartStateCollision
+              default_planner_request_adapters/FixStartStatePathConstraints
+              " />
+  </node>
+
+</launch>

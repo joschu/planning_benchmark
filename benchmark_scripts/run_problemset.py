@@ -14,8 +14,6 @@ parser.add_argument("--n_steps", type=int, default=11, help="num steps for trajo
 
 # trajopt options
 parser.add_argument("--interactive", action="store_true")
-parser.add_argument("--trajopt_dist_pen", type=float, default=.02)
-parser.add_argument("--trajopt_no_selfcoll_first", action="store_true")
 parser.add_argument("--use_random_inits", action="store_true")
 
 # ompl options
@@ -51,8 +49,6 @@ import json
 import planning_benchmark_common.func_utils as fu
 
 LEFT_POSTURES = [
-    #[-1.19257663,  0.73967304, -1.6, -1.17798376,  1.23031085, -0.38983174,  2.85648962],
-    #[0.0024,  0.6091, -1.4913, -1.9477,  2.4689, -1.9924, -1.685], #tuck
     [-0.243379, 0.103374, -1.6, -2.27679, 3.02165, -2.03223, -1.6209], #chest fwd
     [-1.68199, -0.088593, -1.6, -2.08996, 3.04403, -0.41007, -1.39646],# side fwd
     [-0.0428341, -0.489164, -0.6, -1.40856, 2.32152, -0.669566, -2.13699],# face up
@@ -91,7 +87,7 @@ def mirror_arm_joints(x):
 def get_postures(group_name):
     if group_name=="left_arm": return LEFT_POSTURES
     if group_name=="right_arm": return [mirror_arm_joints(posture) for posture in LEFT_POSTURES]
-    if group_name=="whole_body": return KITCHEN_WAYPOINTS
+    #if group_name=="whole_body": return KITCHEN_WAYPOINTS
     raise Exception
 def animate_traj(traj, robot, pause=True, restore=True):
     """make sure to set active DOFs beforehand"""
@@ -180,7 +176,6 @@ def gen_init_trajs(problemset, robot, n_steps, start_joints, end_joints):
         if i == 0:
             inittraj = mu.linspace2d(start_joints, end_joints, n_steps)
         else:
-            # print "trying with midpoint", waypoint
             inittraj = np.empty((n_steps, robot.GetActiveDOF()))
             inittraj[:waypoint_step+1] = mu.linspace2d(start_joints, waypoint, waypoint_step+1)
             inittraj[waypoint_step:] = mu.linspace2d(waypoint, end_joints, n_steps - waypoint_step)
@@ -226,7 +221,7 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
 
     n_steps = args.n_steps
     coll_coeff = 10
-    dist_pen = args.trajopt_dist_pen
+    dist_pen = .02
 
     def single_trial(inittraj, use_discrete_collision):
         s = make_trajopt_request(n_steps, coll_coeff, dist_pen, end_joints, inittraj, use_discrete_collision)
@@ -236,33 +231,15 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
         prob.SetRobotActiveDOFs()
         return traj, traj_is_safe(traj, robot) #and (use_discrete_collision or traj_no_self_collisions(traj, robot))
 
-    #init_trajs = gen_init_trajs(problemset, robot, group_name, n_steps, start_joints, end_joints)
     success = False
     msg = ''
     t_start = time()
     for (i_init,inittraj) in enumerate(init_trajs):
-        if args.trajopt_no_selfcoll_first:
-            traj, is_safe = single_trial(inittraj, False)
-            if is_safe:
-                msg = "planning successful after %s initialization (no self collisions)"%(i_init+1)
-                success = True
-                break
-            traj, is_safe = single_trial(traj, True)
-            if is_safe:
-                msg = "planning successful after %s initialization (with self collisions, initialization from no-self-collisions)"%(i_init+1)
-                success = True
-                break
-            traj, is_safe = single_trial(inittraj, True)
-            if is_safe:
-                msg = "planning successful after %s initialization (with self collisions, original initialization)"%(i_init+1)
-                success = True
-                break
-        else:
-            traj, is_safe = single_trial(inittraj, True)
-            if is_safe:
-                msg = "planning successful after %s initialization"%(i_init+1)
-                success = True
-                break
+        traj, is_safe = single_trial(inittraj, True)
+        if is_safe:
+            msg = "planning successful after %s initialization"%(i_init+1)
+            success = True
+            break
     t_total = time() - t_start
 
     return success, t_total, [row.tolist() for row in traj], msg
@@ -279,7 +256,6 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
     msg.allowed_planning_time = args.max_planning_time
     c = mm.Constraints()
     joints = robot.GetJoints()
-    #joint_inds = robot.GetManipulator(manip_name).GetArmIndices()
 
     if active_affine == 0:
         base_joint_names = []
@@ -292,7 +268,6 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
 
     msg.start_state = ps.robot_state
     msg.goal_constraints = [c]
-    #req.allowed_planning_time = rospy.Duration(args.max_planning_time)
     svc = get_ompl_service()
     try:
         t_start = time()
@@ -311,13 +286,6 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
               row += [ros_quat_to_aa(base_trans.rotation)[2]]
             traj.append(row)
         traj = np.asarray(traj)
-        #if not is_safe: 
-            #print "Openrave thinks it's not safe!!! animating"
-            #col_times = traj_collisions(traj, robot)
-            #print "col times:",col_times
-            #n=100
-            #traj_up = mu.interp2d(np.linspace(0,1,n), np.linspace(0,1,len(traj)), traj)            
-            #animate_traj(traj_up, robot)
         return True, response.planning_time, traj, ''
     except rospy.service.ServiceException, e:
         return False, time() - t_start, [], 'failed due to ServiceException: ' + repr(e)
@@ -370,7 +338,6 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
     t_start = time()
     is_safe = False
     if args.multi_init:
-        #init_trajs = gen_init_trajs(robot, group_name, n_points, start_joints, target_dof_values)
         for i_init, inittraj in enumerate(init_trajs):
             t = kwargs["starttraj"] = array_to_traj(robot, inittraj)
             traj = traj_to_array(m_chomp.runchomp(**kwargs))
@@ -383,7 +350,6 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
         traj = traj_to_array(m_chomp.runchomp(**kwargs))
         is_safe = traj_is_safe(traj, robot)
     t_total = time() - t_start
-
 
     return is_safe, t_total, traj, msg
 

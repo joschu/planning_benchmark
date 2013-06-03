@@ -2,7 +2,7 @@ import numpy as np
 import openravepy
 
 def calc_world_bounds(env, ignore_names):
-    inf = 999999999999
+    inf = float('inf')
     lo, hi = np.array([inf, inf, inf]), -np.array([inf, inf, inf])
     for body in env.GetBodies():
         if body.GetName() in ignore_names: continue
@@ -29,7 +29,6 @@ def sample_base_positions(robot, num=5, tucked=True):
     with robot:
         while len(out) < num:
             x, y, theta = np.random.rand(3)*(max_xyt-min_xyt) + min_xyt
-            #x, y, theta = min_xyt
             joints[-3:] = [x, y, theta]
             robot.SetActiveDOFValues(joints)
             if not env.CheckCollision(robot):
@@ -74,7 +73,6 @@ def main():
 
     env.SetViewer('qtcoin')
     env.UpdatePublishedBodies()
-    raw_input('asdf')
 
     poses = sample_base_positions(robot, num=100)
     while True:
