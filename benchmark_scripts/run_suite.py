@@ -20,6 +20,16 @@ PROBLEM_SET_DIR = 'problem_sets'
 def filter_finite(a):
     return a[np.isfinite(a)]
 
+def unwind(traj):
+    #print traj
+    if len(traj[0]) == 7 or len(traj[0]) == 15: inds = [2, 4, 6]
+    elif len(traj[0]) == 15: traj = traj[:7]; inds = [2, 4, 6]
+    elif len(traj[0]) == 18: inds = [1+2, 1+4, 1+6, 1+2+7, 1+4+7, 1+6+7, 17]
+    else: raise NotImplementedError('dont know how to deal with %d dof' % len(traj[0]))
+    for i in inds:
+        traj[:,i] = np.unwrap(traj[:,i])
+    return traj
+
 def run_suite(suite):
     results = {}
     i, num_runs = 0, len(suite["problem_sets"]) * len(suite["configurations"])
@@ -42,6 +52,8 @@ def run_suite(suite):
     return results
 
 def traj_len(traj):
+    traj = traj.copy()
+    traj = unwind(traj)
     return np.sqrt(((traj[1:,:] - traj[:-1,:])**2).sum(axis=1)).sum()
 
 def display_summary(suite, results):
@@ -63,6 +75,7 @@ def display_summary(suite, results):
             times = np.asarray([float(run["time"]) for run in res])
             cfg2stats[cfg_id]["avg_time"] = np.mean(times[np.isfinite(times)])
 
+            #print pset_file, cfg["name"]
             traj_lens = np.asarray([traj_len(np.asarray(run["traj"])) for run in res if len(run["traj"]) != 0])
             cfg2stats[cfg_id]["avg_abs_path_len"] = np.mean(traj_lens)
 
@@ -75,8 +88,7 @@ def display_summary(suite, results):
             abs_lens.append(cfg2stats[cfg_id]["_all_abs_path_lens"])
             if len(abs_lens) >= 2: assert len(abs_lens[-1]) == len(abs_lens[-2])
         abs_lens = np.asarray(abs_lens) # planners x problems
-        print abs_lens
-        raw_input('hi')
+        #print abs_lens
         normed = abs_lens / abs_lens.min(axis=0)[None,:]
         import sys
         #print >>sys.stderr, 'divided by', abs_lens, abs_lens.min(axis=0)
