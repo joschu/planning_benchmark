@@ -37,9 +37,11 @@ def traj_len(traj):
 
 def run_suite(suite):
     results = {}
+    if len(set(cfg["name"] for cfg in suite["configurations"])) != len(suite["configurations"]):
+        raise RuntimeError("Names of planner configurations must be unique!")
     i, num_runs = 0, len(suite["problem_sets"]) * len(suite["configurations"])
-    for ps_id, pset_file in enumerate(suite["problem_sets"]):
-        for cfg_id, cfg in enumerate(suite["configurations"]):
+    for pset_file in suite["problem_sets"]:
+        for cfg in suite["configurations"]:
             # execute run_problemset.py and read its output
             i += 1
             fd, out_file_path = tempfile.mkstemp(); os.close(fd)
@@ -52,17 +54,17 @@ def run_suite(suite):
                 output = yaml.load(f)
             os.unlink(out_file_path)
 
-            results[(ps_id, cfg_id)] = output
+            results[(pset_file, cfg["name"])] = output
 
     return results
 
 def display_summary(suite, results):
     from collections import defaultdict
-    for ps_id, pset_file in enumerate(suite["problem_sets"]):
+    for pset_file in suite["problem_sets"]:
         cfg2stats = defaultdict(dict)
         first = True
         for cfg_id, cfg in enumerate(suite["configurations"]):
-            key = (ps_id, cfg_id)
+            key = (pset_file, cfg["name"])
             if key not in results: continue
             res = results[key]
 
