@@ -54,7 +54,7 @@ to suppress excessive logging output from trajopt.
 
 Running a testing suite
 =======================
-We provide the following suite files:
+We provide the following suite files, which correspond to the experiments described in the paper:
 
 - `problem_sets/suite_rightarm.yaml`: arm planning problems for trajopt, OMPL, and CHOMP
 - `problem_sets/suite_fullbody.yaml`: full-body planning problems for trajopt and OMPL
@@ -118,6 +118,8 @@ and provided full-body planning problem set files are
 - `problem_sets/kitchen_fullbody.yaml`
 - `problem_sets/kitchen_fullbody_10.yaml`
 - `problem_sets/living_room.yaml` (environment courtesy of http://sketchup.google.com/3dwarehouse/details?mid=7eaee5ac64047976e7b3e201635a5735)
+- `problem_sets/living_room_2.yaml` (environment courtesy of http://sketchup.google.com/3dwarehouse/details?mid=d6060bf6aa7f6104e476470c75f07cbc)
+- `problem_sets/hotel_room.yaml` (environment courtesy of http://sketchup.google.com/3dwarehouse/details?mid=a08d5c49f8905b572917b0bf77a278b8)
 
 The supported planners are `trajopt`, `chomp`, and `ompl`. Extra options can be provided to
 configure the behavior of the planners. For details, run

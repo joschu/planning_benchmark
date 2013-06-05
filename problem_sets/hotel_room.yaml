@@ -1,0 +1,75 @@
+active_affine: 11
+active_joints: [torso_lift_joint, l_shoulder_pan_joint, l_shoulder_lift_joint, l_upper_arm_roll_joint,
+  l_elbow_flex_joint, l_forearm_roll_joint, l_wrist_flex_joint, l_wrist_roll_joint,
+  r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint,
+  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint]
+default_base_pose: [0.3420549523158093, -0.0, -0.0, -0.9396799506194806, 1.7586164474487305,
+  1.7470324039459229, 0.0]
+default_joint_values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.09761466769909818, 0.0, 0.0, 0.0, 0.3337093067243577, 0.40349491953843497, 0.49899999641941567,
+  -1.2901113386606093, -2.8585776507464535, -1.1514348271258816, 2.578370600979067,
+  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.37109399185021896, 0.5915186464071507, 0.6333750879056752,
+  -2.1110067586636614, -3.1261506404449153, -1.4248590483682975, 2.625691315663273,
+  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+env_file: sketchup/hotel_room.zae
+group_name: whole_body
+joint_names: [fl_caster_rotation_joint, fl_caster_l_wheel_joint, fl_caster_r_wheel_joint,
+  fr_caster_rotation_joint, fr_caster_l_wheel_joint, fr_caster_r_wheel_joint, bl_caster_rotation_joint,
+  bl_caster_l_wheel_joint, bl_caster_r_wheel_joint, br_caster_rotation_joint, br_caster_l_wheel_joint,
+  br_caster_r_wheel_joint, torso_lift_joint, head_pan_joint, head_tilt_joint, laser_tilt_mount_joint,
+  r_shoulder_pan_joint, r_shoulder_lift_joint, r_upper_arm_roll_joint, r_elbow_flex_joint,
+  r_forearm_roll_joint, r_wrist_flex_joint, r_wrist_roll_joint, r_gripper_motor_slider_joint,
+  r_gripper_motor_screw_joint, r_gripper_l_finger_joint, r_gripper_l_finger_tip_joint,
+  r_gripper_r_finger_joint, r_gripper_r_finger_tip_joint, r_gripper_joint, l_shoulder_pan_joint,
+  l_shoulder_lift_joint, l_upper_arm_roll_joint, l_elbow_flex_joint, l_forearm_roll_joint,
+  l_wrist_flex_joint, l_wrist_roll_joint, l_gripper_motor_slider_joint, l_gripper_motor_screw_joint,
+  l_gripper_l_finger_joint, l_gripper_l_finger_tip_joint, l_gripper_r_finger_joint,
+  l_gripper_r_finger_tip_joint, l_gripper_joint, torso_lift_motor_screw_joint]
+robot_name: pr2
+states:
+
+    - state0: &state0
+        [ 0.0976, 1.0257, 1.1795, 1.554, -2.12, -0.2533,
+         -1.2496, 0.7296, -0.5387, 1.1035, -1.7892, -1.8962,
+          0.1081, -1.4375, -1.3529, 2.2544173, 5.12367457, 1.38215522 ]
+
+    - state1: &state1
+        [ 0.025 ,  0.5227,  1.0684, -0.3379, -1.716 , -1.7359, -1.9995,
+          0.0897,  0.4578, -0.0864,  0.3626, -0.9846,  2.0885, -1.0308,
+          -1.1565,  2.5607,  1.6385, -1.881 ]
+    - state2: &state2
+        [ 0.025 ,  1.1086,  1.1947,  0.8571, -1.8926,  1.2764, -1.1601,
+          -3.0391,  0.5643, -0.0115, -0.3144, -1.6739,  2.1641, -1.9232,
+          -1.2862,  0.9938,  2.1408,  0.4647]
+    - state3: &state3
+        [ 0.025 ,  0.3728, -0.3422,  1.5162, -0.8622, -2.4635, -0.4541,
+          -0.5098, -0.1863, -0.1947, -0.9019, -1.2169, -3.1124, -1.5335,
+          -0.4916,  1.4479,  6.9055,  1.5427]
+    - state4: &state4
+        [ 0.025 ,  0.2963,  0.7044, -0.2146, -1.6899,  2.8636, -1.4789,
+          2.1481,  0.2494,  0.3771, -0.1208, -1.1226,  2.8119, -1.3493,
+          -0.8827,  1.4138,  3.4137,  0.2283]
+    - state5: &state5
+        [ 0.025 ,  0.2963,  0.7044, -0.2146, -1.6899,  2.8636, -1.4789,
+          2.1481,  0.2494,  0.3771, -0.1208, -1.1226,  2.8119, -1.3493,
+          -0.8827,  1.4164,  4.493 , -3.1363]
+    - state6: &state6
+        [ 0.025 ,  0.6327, -0.1846,  1.9098, -1.8258,  2.7399, -1.0879,
+          0.0182,  0.1713,  0.5479,  0.1502, -2.0703,  2.8405, -1.9998,
+          -1.4101,  1.0906,  6.9918, -0.0042]
+    - state7: &state7
+        [ 0.025 ,  0.4319, -0.2189, -0.4819, -1.0964, -1.2466, -0.7757,
+          1.5115,  0.1513,  0.5943,  0.1502, -1.9681,  2.8818, -1.8601,
+          -1.3667,  2.866 ,  1.4089,  2.7412]
+    - state8: &state8
+        [ 0.025 ,  0.3189,  0.0048, -0.1049, -0.9401,  2.4261, -1.6768,
+          2.0665, -0.5569,  0.0611, -1.2613, -1.8263, -2.5866, -1.5924,
+          -0.0676,  2.3259,  3.2352,  1.5789]
+    - state9: &state9
+        [ 0.025 , -0.0118,  0.0036,  0.4336, -1.8658,  2.3665, -1.9992,
+          0.9398, -0.0474,  0.7479, -0.2433, -1.9975,  2.9968, -1.7921,
+          -1.0303,  1.4401,  5.8153,  1.5776]
+
+problems:
+    - all_pairs:
+        active_dof_values: [*state0, *state1, *state2, *state3, *state4, *state5, *state6, *state7, *state8, *state9]

@@ -50,7 +50,7 @@ import os
 import os.path as osp
 sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_common as pbc
 from trajoptpy.check_traj import traj_is_safe, traj_collisions
-from planning_benchmark_common.sample_base import sample_base_positions
+from planning_benchmark_common.sampling import sample_base_positions
 import trajoptpy.math_utils as mu
 from time import time
 import numpy as np

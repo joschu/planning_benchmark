@@ -11,7 +11,7 @@ default_joint_values: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.
   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.37109399185021896, 0.5915186464071507, 0.6333750879056752,
   -2.1110067586636614, -3.1261506404449153, -1.4248590483682975, 2.625691315663273,
   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-env_file: living_room.dae
+env_file: sketchup/living_room.zae
 group_name: whole_body
 joint_names: [fl_caster_rotation_joint, fl_caster_l_wheel_joint, fl_caster_r_wheel_joint,
   fr_caster_rotation_joint, fr_caster_l_wheel_joint, fr_caster_r_wheel_joint, bl_caster_rotation_joint,
