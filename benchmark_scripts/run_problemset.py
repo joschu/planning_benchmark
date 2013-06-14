@@ -22,6 +22,7 @@ g2.add_argument("--use_random_inits", action="store_true", help="Use 5 random co
 # trajopt options
 g3 = parser.add_argument_group("trajopt-only", "Options specific to trajopt")
 g3.add_argument("--interactive", action="store_true", help="Interactively display steps in the optimization")
+g3.add_argument("--include_2step_sweeps", action="store_true", help="add in costs for swept volumes 0-2,1-3,2-4")
 
 # ompl options
 g4 = parser.add_argument_group("ompl-only", "Options specific to OMPL")
@@ -154,6 +155,21 @@ def setup_ompl(env):
     get_ompl_service()
     rave_env_to_ros(env)
 
+def setup_trajopt(env):
+    "use the ROS config file to ignore some impossible self collisions. very slight speedup"
+    import xml.etree.ElementTree as ET
+    robot = env.GetRobot("pr2")
+    cc = trajoptpy.GetCollisionChecker(env)
+    root = ET.parse("/opt/ros/groovy/share/pr2_moveit_config/config/pr2.srdf").getroot()
+    disabled_elems=root.findall("disable_collisions")
+    for elem in disabled_elems:
+        linki = robot.GetLink(elem.get("link1"))
+        linkj = robot.GetLink(elem.get("link2"))
+        if linki and linkj:
+            cc.ExcludeCollisionPair(linki, linkj)
+    
+    
+
 @fu.once
 def get_chomp_module(env):
     from orcdchomp import orcdchomp
@@ -206,8 +222,8 @@ def make_trajopt_request(n_steps, coll_coeff, dist_pen, end_joints, inittraj, us
             },            
             {
                 "type" : "collision",
-                "params" : {"coeffs" : [coll_coeff],"dist_pen" : [dist_pen], "continuous":True}
-            },
+                "params" : {"coeffs" : [coll_coeff],"dist_pen" : [dist_pen], "continuous":True, "gap":1}
+            }
         ],
         "constraints" : [
             {"type" : "joint", "params" : {"vals" : end_joints}}
@@ -223,6 +239,12 @@ def make_trajopt_request(n_steps, coll_coeff, dist_pen, end_joints, inittraj, us
             "type" : "collision",
             "params" : {"coeffs" : [coll_coeff],"dist_pen" : [dist_pen], "continuous":False}
         })
+    if args.include_2step_sweeps:
+        d["costs"].append({
+        "type" : "collision",
+        "params" : {"coeffs" : [coll_coeff],"dist_pen" : [dist_pen], "continuous":True, "gap":2}
+        })
+    
     return json.dumps(d)
 
 
@@ -372,7 +394,13 @@ def init_env(problemset):
         "pr2":"robots/pr2-beta-static.zae"
     }
 
+
+    env.Load(osp.join(pbc.envfile_dir,problemset["env_file"]))
+    env.Load(robot2file[problemset["robot_name"]])
+    robot = env.GetRobots()[0]
+
     if args.planner == "trajopt":
+        setup_trajopt(env)
         if args.interactive: trajoptpy.SetInteractive(True)      
         plan_func = trajopt_plan
     elif args.planner == "ompl":
@@ -383,9 +411,6 @@ def init_env(problemset):
         robot2file["pr2"] = osp.join(pbc.envfile_dir, "pr2_with_spheres.robot.xml") # chomp needs a robot with spheres
         plan_func = chomp_plan
 
-    env.Load(osp.join(pbc.envfile_dir,problemset["env_file"]))
-    env.Load(robot2file[problemset["robot_name"]])
-    robot = env.GetRobots()[0]
 
     robot.SetTransform(openravepy.matrixFromPose(problemset["default_base_pose"]))
     rave_joint_names = [joint.GetName() for joint in robot.GetJoints()]
