@@ -123,8 +123,9 @@ def display_summary(suite, results):
         print
 
     print "--------OVERALL-----------"
-    row_format ="{:>25}" * (len(cfg2totals[0].keys()) + 1)    
-    print row_format.format("","numsolved","fracsolved", "normed_len", "time")
+    fields = ["numsolved","fracsolved", "normed_len", "time"]
+    row_format ="{:>25}" * (len(fields)+1)    
+    print row_format.format("",*fields)
     for (cfg_id, cfg) in enumerate(suite["configurations"]):
         totals = cfg2totals[cfg_id]
         numsolved = totals["solved"]
