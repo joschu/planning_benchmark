@@ -14,6 +14,7 @@ parser.add_argument("--summarize", type=argparse.FileType("r"), help="take the i
 args = parser.parse_args()
 
 
+
 RUN_SCRIPT = 'benchmark_scripts/run_problemset.py'
 PROBLEM_SET_DIR = 'problem_sets'
 
@@ -60,6 +61,13 @@ def run_suite(suite):
 
 def display_summary(suite, results):
     from collections import defaultdict
+    cfg2totals = {}
+    for cfg_id, cfg in enumerate(suite["configurations"]):
+        name = cfg["name"]
+        cfg2totals[cfg_id] = defaultdict(float)
+
+    n_probs = 0
+
     for pset_file in suite["problem_sets"]:
         cfg2stats = defaultdict(dict)
         first = True
@@ -71,6 +79,9 @@ def display_summary(suite, results):
             if first:
                 print 'Problem set: %s, num problems: %d' % (pset_file, len(res))
                 first = False
+                n_probs += len(res)
+
+            cfg2stats[cfg_id]["_num_problems"] = len(res)
 
             cfg2stats[cfg_id]["success_frac"] = float(sum(run["success"] for run in res)) / len(res)
 
@@ -82,6 +93,10 @@ def display_summary(suite, results):
 
             all_traj_lens = np.asarray([traj_len(np.asarray(run["traj"])) if len(run["traj"]) != 0 and run["success"] else float('inf') for run in res])
             cfg2stats[cfg_id]["_all_abs_path_lens"] = all_traj_lens
+
+            cfg2totals[cfg_id]["solved"] += float(sum(run["success"] for run in res))
+            cfg2totals[cfg_id]["time"] += float(sum(times))
+
 
         # for each pset, iterate through all cfgs, and normalize across corresponding path lens
         abs_lens = []
@@ -97,12 +112,26 @@ def display_summary(suite, results):
         for cfg_id, cfg in enumerate(suite["configurations"]):
             cfg2stats[cfg_id]["avg_normed_path_len"] = avg_normed[cfg_id]
 
+            cfg2totals[cfg_id]["normed_len"] += sum(x for x in normed[cfg_id] if x < np.inf)
+
+
         # print csv summary for the pset
         print ',' + ','.join(suite["configurations"][cfg_id]["name"] for cfg_id in cfg2stats)
         for field in cfg2stats[0]:
             if field[0] == "_": continue
             print field + ',' + ','.join(str(cfg2stats[cfg_id][field]) for cfg_id in cfg2stats)
         print
+
+    print "--------OVERALL-----------"
+    row_format ="{:>25}" * (len(cfg2totals[0].keys()) + 1)    
+    print row_format.format("","numsolved","fracsolved", "normed_len", "time")
+    for (cfg_id, cfg) in enumerate(suite["configurations"]):
+        totals = cfg2totals[cfg_id]
+        numsolved = totals["solved"]
+        fracsolved = totals["solved"] / float(n_probs)
+        normed_len = totals["normed_len"] / float(totals["solved"])
+        time = totals["time"] / float(n_probs)
+        print row_format.format(cfg["name"], numsolved, fracsolved, normed_len, time)
 
 def main():
     if args.summarize is None:
