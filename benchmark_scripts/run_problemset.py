@@ -326,12 +326,15 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
     datadir = 'chomp_data'
     n_points = args.n_steps
 
-    if active_affine != 0:
-        raise NotImplementedError("chomp probably doesn't work with affine dofs")
+#   if active_affine != 0:
+#       raise NotImplementedError("chomp probably doesn't work with affine dofs")
     openravepy.RaveSetDebugLevel(openravepy.DebugLevel.Warn)
     m_chomp = get_chomp_module(robot.GetEnv())
 
     env_hash = hash_env(robot.GetEnv())
+    if active_affine != 0:
+        env_hash += "_aa" + str(active_affine)
+
     start_joints = robot.GetActiveDOFValues()
 
     # load distance field
@@ -369,18 +372,26 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
     msg = ''
     t_start = time()
     is_safe = False
+    traj = []
     if args.multi_init:
         for i_init, inittraj in enumerate(init_trajs):
             t = kwargs["starttraj"] = array_to_traj(robot, inittraj)
-            traj = traj_to_array(m_chomp.runchomp(**kwargs))
-            if traj_is_safe(traj, robot):
-                is_safe = True
-                msg = "planning successful after %s initialization"%(i_init+1)
-                break
+            try:
+              traj = traj_to_array(m_chomp.runchomp(**kwargs))
+              if traj_is_safe(traj, robot):
+                  is_safe = True
+                  msg = "planning successful after %s initialization"%(i_init+1)
+                  break
+            except Exception, e:
+              msg = "chomp failed with exception: %s" % repr(e)
+              continue
     else:
         kwargs["adofgoal"] = target_dof_values
-        traj = traj_to_array(m_chomp.runchomp(**kwargs))
-        is_safe = traj_is_safe(traj, robot)
+        try:
+          traj = traj_to_array(m_chomp.runchomp(**kwargs))
+          is_safe = traj_is_safe(traj, robot)
+        except Exception, e:
+          msg = "chomp failed with exception: %s" % repr(e)
     t_total = time() - t_start
 
     return is_safe, t_total, traj, msg

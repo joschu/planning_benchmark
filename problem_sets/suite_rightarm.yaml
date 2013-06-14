@@ -12,12 +12,20 @@ configurations:
     planner: ompl
     args: ["--ompl_planner_id=LBKPIECEkConfigDefault"]
 
-  - name: chomp-hmc
+  - name: chomp
     planner: chomp
-    args: ["--chomp_argstr=hmc-seed0", "--max_planning_time=5"]
-  - name: chomp-hmc-multi_init
+    args: ["--chomp_argstr=comp", "--max_planning_time=3", "--n_steps=101"]
+
+  - name: chomp-multi_init
     planner: chomp
-    args: ["--chomp_argstr=hmc-seed0", "--max_planning_time=5", "--multi_init"]
+    args: ["--chomp_argstr=comp", "--max_planning_time=3", "--n_steps=101", "--multi_init"]
+
+# - name: chomp-hmc
+#   planner: chomp
+#   args: ["--chomp_argstr=hmc-seed0", "--max_planning_time=5", "--n_steps=101"]
+# - name: chomp-hmc-multi_init
+#   planner: chomp
+#   args: ["--chomp_argstr=hmc-seed0", "--max_planning_time=5", "--n_steps=101", "--multi_init"]
 
 problem_sets:
   - bookshelves_rightarm.yaml
