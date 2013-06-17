@@ -115,7 +115,7 @@ def display_summary(suite, results):
         for cfg_id, cfg in enumerate(suite["configurations"]):
             cfg2stats[cfg_id]["avg_normed_path_len"] = avg_normed[cfg_id]
 
-            cfg2totals[cfg_id]["normed_len"] += sum(x for x in normed[cfg_id] if x < np.inf)
+            cfg2totals[cfg_id]["normed_len"] += sum(filter_finite(normed[cfg_id]))
 
 
         # print csv summary for the pset
