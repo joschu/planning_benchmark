@@ -265,7 +265,7 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
     start_joints = robot.GetActiveDOFValues()
 
     n_steps = args.n_steps
-    coll_coeff = 10
+    coll_coeff = 40
     dist_pen = .02
 
     def single_trial(inittraj, use_discrete_collision):
