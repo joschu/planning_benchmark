@@ -13,10 +13,12 @@ parser.add_argument("-o","--outfile",type=argparse.FileType("w"), help="File to 
 parser.add_argument("--summarize", type=argparse.FileType("r"), help="take the input to be the output of a previous run, and display the summmary only")
 args = parser.parse_args()
 
+assert args.suitefile is not None or args.summarize is not None
 
 
-RUN_SCRIPT = 'benchmark_scripts/run_problemset.py'
-PROBLEM_SET_DIR = 'problem_sets'
+PROBLEM_SET_DIR = osp.join(osp.dirname(__file__), '../problem_sets')
+
+RUN_SCRIPT = osp.join(osp.dirname(__file__), "run_problemset.py")
 
 def filter_finite(a):
     return a[np.isfinite(a)]

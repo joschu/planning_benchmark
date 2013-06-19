@@ -49,7 +49,8 @@ if args.outfile is None: args.outfile = sys.stdout
 import yaml, openravepy, trajoptpy
 import os
 import os.path as osp
-sys.path.insert(1, os.path.join(sys.path[0], '..')); import planning_benchmark_common as pbc
+sys.path.append(osp.dirname(osp.dirname(__file__)))
+import planning_benchmark_common as pbc
 from trajoptpy.check_traj import traj_is_safe, traj_collisions
 from planning_benchmark_common.sampling import sample_base_positions
 import trajoptpy.math_utils as mu
@@ -192,8 +193,6 @@ def gen_init_trajs(problemset, robot, n_steps, start_joints, end_joints):
             print 'using random initializations'
             joint_waypoints.extend(sample_base_positions(robot, num=5, tucked=True))
         # if the problem file has waypoints, just use those
-        elif "midpoints" in problemset:
-            joint_waypoints.extend(problemset["midpoints"])
         else:
             if problemset["group_name"] in ["right_arm", "left_arm", "whole_body"]:
                 joint_waypoints.extend(get_postures(problemset["group_name"]))
