@@ -5,6 +5,12 @@ configurations:
   - name: trajopt-multi_init
     planner: trajopt
     args: ["--multi_init", "--use_random_inits", "--n_steps=41"]
+  - name: trajopt-2ss
+    planner: trajopt
+    args: ["--n_steps=41", "--include_2step_sweeps"]
+  - name: trajopt-multi_init-2ss
+    planner: trajopt
+    args: ["--multi_init", "--use_random_inits", "--n_steps=41", "--include_2step_sweeps"]
 
   - name: ompl-RRTConnect
     planner: ompl
@@ -12,6 +18,10 @@ configurations:
   - name: ompl-LBKPIECE
     planner: ompl
     args: ["--ompl_planner_id=LBKPIECEkConfigDefault", "--max_planning_time=30"]
+
+  - name: chomp
+    planner: chomp
+    args: ["--chomp_argstr=comp", "--max_planning_time=30", "--n_steps=101"]
 
 problem_sets:
   - kitchen_fullbody.yaml

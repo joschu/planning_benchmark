@@ -49,7 +49,7 @@ if args.outfile is None: args.outfile = sys.stdout
 import yaml, openravepy, trajoptpy
 import os
 import os.path as osp
-sys.path.append(osp.dirname(osp.dirname(__file__)))
+sys.path.append(osp.dirname(osp.dirname(osp.abspath(sys.argv[0]))))
 import planning_benchmark_common as pbc
 from trajoptpy.check_traj import traj_is_safe, traj_collisions
 from planning_benchmark_common.sampling import sample_base_positions
@@ -109,10 +109,24 @@ def animate_traj(traj, robot, pause=True, restore=True):
         robot.SetActiveDOFValues(dofs)
         if pause: viewer.Idle()
         else: viewer.Step()
-def traj_to_array(traj):
-    return traj.GetWaypoints(0, traj.GetNumWaypoints()).reshape((traj.GetNumWaypoints(), -1))
+def traj_to_array(robot, traj):
+    """make sure to set active DOFs (including affine, if needed) beforehand"""
+    assert robot.GetAffineDOF() in [0, 11] # we only support these right now 
+    cs = traj.GetConfigurationSpecification()
+    out = np.empty((traj.GetNumWaypoints(), robot.GetActiveDOF()))
+    has_affine = robot.GetAffineDOF() == 11
+    with robot:
+        for i in range(traj.GetNumWaypoints()):
+            wp = traj.GetWaypoint(i)
+            joints = cs.ExtractJointValues(wp, robot, robot.GetActiveDOFIndices())
+            if has_affine:
+                robot.SetTransform(cs.ExtractTransform(None, wp, robot))
+                affine = robot.GetActiveDOFValues()[-3:]
+                out[i] = np.r_[joints, affine]
+            else:
+                out[i] = joints
+    return out
 def array_to_traj(robot, a, dt=1):
-    #spec = robot.GetActiveConfigurationSpecification()
     spec = openravepy.ConfigurationSpecification()
     name = "joint_values %s %s" % (robot.GetName(), ' '.join(map(str, robot.GetActiveDOFIndices())))
     spec.AddGroup(name, robot.GetActiveDOF(), interpolation="linear")
@@ -156,7 +170,7 @@ def setup_ompl(env):
     get_ompl_service()
     rave_env_to_ros(env)
 
-def setup_trajopt(env):
+def postsetup_trajopt(env):
     "use the ROS config file to ignore some impossible self collisions. very slight speedup"
     import xml.etree.ElementTree as ET
     robot = env.GetRobot("pr2")
@@ -325,13 +339,25 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
     datadir = 'chomp_data'
     n_points = args.n_steps
 
-    if active_affine != 0:
-        raise NotImplementedError("chomp probably doesn't work with affine dofs")
+    assert active_affine == 0 or active_affine == 11
+    use_base = active_affine == 11
+    
+    saver = openravepy.RobotStateSaver(robot)
+    
+    target_base_pose = None
+    if use_base:
+        with robot:
+            robot.SetActiveDOFValues(target_dof_values)
+            target_base_pose = openravepy.poseFromMatrix(robot.GetTransform())
+        robot.SetActiveDOFs(robot.GetActiveDOFIndices(), 0) # turn of affine dofs; chomp takes that separately
+        target_dof_values = target_dof_values[:-3] # strip off the affine part
+
     openravepy.RaveSetDebugLevel(openravepy.DebugLevel.Warn)
     m_chomp = get_chomp_module(robot.GetEnv())
 
     env_hash = hash_env(robot.GetEnv())
-    start_joints = robot.GetActiveDOFValues()
+    if active_affine != 0:
+        env_hash += "_aa" + str(active_affine)
 
     # load distance field
     j1idxs = [m.GetArmIndices()[0] for m in robot.GetManipulators()]
@@ -340,7 +366,8 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
             if robot.DoesAffect(j1idx, link.GetIndex()):
                 link.Enable(False)
     try:
-        m_chomp.computedistancefield(kinbody=robot, aabb_padding=1.0,
+        aabb_padding = 1.0 if not use_base else 3.0 # base problems should need a distance field over a larger volume
+        m_chomp.computedistancefield(kinbody=robot, aabb_padding=aabb_padding,
           cache_filename='%s/chomp-sdf-%s.dat' % (datadir, env_hash))
     except Exception, e:
         print 'Exception in computedistancefield:', repr(e)
@@ -364,22 +391,38 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
     else:
         raise RuntimeError('must be chomp-seedXXXX')
 
+    if use_base:
+        kwargs["floating_base"] = True
+        kwargs["basegoal"] = np.r_[target_base_pose[4:7], target_base_pose[0:4]]
+
     # run chomp
     msg = ''
     t_start = time()
     is_safe = False
+    traj = []
     if args.multi_init:
         for i_init, inittraj in enumerate(init_trajs):
             t = kwargs["starttraj"] = array_to_traj(robot, inittraj)
-            traj = traj_to_array(m_chomp.runchomp(**kwargs))
-            if traj_is_safe(traj, robot):
-                is_safe = True
-                msg = "planning successful after %s initialization"%(i_init+1)
-                break
+            try:
+                rave_traj = m_chomp.runchomp(**kwargs)
+                saver.Restore() # set active dofs to original (including affine), needed for traj_to_array
+                traj = traj_to_array(robot, rave_traj)
+                if traj_is_safe(traj, robot):
+                    is_safe = True
+                    msg = "planning successful after %s initialization"%(i_init+1)
+                    break
+            except Exception, e:
+                msg = "CHOMP failed with exception: %s" % repr(e)
+                continue
     else:
         kwargs["adofgoal"] = target_dof_values
-        traj = traj_to_array(m_chomp.runchomp(**kwargs))
-        is_safe = traj_is_safe(traj, robot)
+        try:
+            rave_traj = m_chomp.runchomp(**kwargs)
+            saver.Restore() # set active dofs to original (including affine), needed for traj_to_array
+            traj = traj_to_array(robot, rave_traj)
+            is_safe = traj_is_safe(traj, robot)
+        except Exception, e:
+            msg = "CHOMP failed with exception: %s" % repr(e)
     t_total = time() - t_start
 
     return is_safe, t_total, traj, msg
@@ -393,13 +436,7 @@ def init_env(problemset):
         "pr2":"robots/pr2-beta-static.zae"
     }
 
-
-    env.Load(osp.join(pbc.envfile_dir,problemset["env_file"]))
-    env.Load(robot2file[problemset["robot_name"]])
-    robot = env.GetRobots()[0]
-
     if args.planner == "trajopt":
-        setup_trajopt(env)
         if args.interactive: trajoptpy.SetInteractive(True)      
         plan_func = trajopt_plan
     elif args.planner == "ompl":
@@ -407,9 +444,17 @@ def init_env(problemset):
         plan_func = ompl_plan
     elif args.planner == "chomp":
         setup_chomp(env)
-        robot2file["pr2"] = osp.join(pbc.envfile_dir, "pr2_with_spheres.robot.xml") # chomp needs a robot with spheres
         plan_func = chomp_plan
+        # chomp needs a robot with spheres
+        chomp_pr2_file = "pr2_with_spheres.robot.xml" if problemset["active_affine"] == 0 else "pr2_with_spheres_fullbody.robot.xml"
+        robot2file["pr2"] = osp.join(pbc.envfile_dir, chomp_pr2_file)
 
+    env.Load(osp.join(pbc.envfile_dir,problemset["env_file"]))
+    env.Load(robot2file[problemset["robot_name"]])
+    robot = env.GetRobots()[0]
+    
+    if args.planner == "trajopt":
+        postsetup_trajopt(env)
 
     robot.SetTransform(openravepy.matrixFromPose(problemset["default_base_pose"]))
     rave_joint_names = [joint.GetName() for joint in robot.GetJoints()]
@@ -427,6 +472,7 @@ def init_env(problemset):
     return env, robot, plan_func
 
 def main():
+    np.random.seed(0)
     problemset = yaml.load(args.problemfile)
     env, robot, plan_func = init_env(problemset)
 
