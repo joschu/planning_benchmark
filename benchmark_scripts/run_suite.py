@@ -77,6 +77,9 @@ def display_summary(suite, results):
             key = (pset_file, cfg["name"])
             if key not in results: continue
             res = results[key]
+            if not res:
+              print 'Problem set: %s, configuration: %s -- ERROR LOADING' % (pset_file, cfg["name"])
+              continue
 
             if first:
                 print 'Problem set: %s, num problems: %d' % (pset_file, len(res))
@@ -114,7 +117,7 @@ def display_summary(suite, results):
         for cfg_id, cfg in enumerate(suite["configurations"]):
             cfg2stats[cfg_id]["avg_normed_path_len"] = avg_normed[cfg_id]
 
-            cfg2totals[cfg_id]["normed_len"] += sum(x for x in normed[cfg_id] if x < np.inf)
+            cfg2totals[cfg_id]["normed_len"] += sum(filter_finite(normed[cfg_id]))
 
 
         # print csv summary for the pset
@@ -143,6 +146,10 @@ def main():
     else:
         results = cPickle.load(args.summarize)
         suite = results["suite"] if "suite" in results else yaml.load(args.suitefile)
+
+    print 'preemptive dump of results to /tmp/predump.pkl'
+    with open('/tmp/predump.pkl', 'w') as f:
+        cPickle.dump(results, f)
 
     print '\n===== Summary ========================\n'
     display_summary(suite, results)
