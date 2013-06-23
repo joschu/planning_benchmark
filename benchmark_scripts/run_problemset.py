@@ -454,7 +454,10 @@ def init_env(problemset):
     robot = env.GetRobots()[0]
     
     if args.planner == "trajopt":
-        postsetup_trajopt(env)
+        try:
+            postsetup_trajopt(env)
+        except Exception:
+            print "can't find ros config file. skipping self collision ignore"
 
     robot.SetTransform(openravepy.matrixFromPose(problemset["default_base_pose"]))
     rave_joint_names = [joint.GetName() for joint in robot.GetJoints()]
