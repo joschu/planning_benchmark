@@ -270,6 +270,7 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
 
     def single_trial(inittraj, use_discrete_collision):
         s = make_trajopt_request(n_steps, coll_coeff, dist_pen, end_joints, inittraj, use_discrete_collision)
+        robot.SetActiveDOFValues(inittraj[0,:])
         prob = trajoptpy.ConstructProblem(s, robot.GetEnv())
         result = trajoptpy.OptimizeProblem(prob)
         traj = result.GetTraj()
