@@ -89,6 +89,10 @@ def display_summary(suite, results):
             cfg2stats[cfg_id]["_num_problems"] = len(res)
 
             cfg2stats[cfg_id]["success_frac"] = float(sum(run["success"] for run in res)) / len(res)
+            cfg2stats[cfg_id]["fail_timeout_frac"] = float(sum((run["status"] == "fail_timeout") for run in res)) / len(res)
+            cfg2stats[cfg_id]["fail_joint_violation_frac"] = float(sum((run["status"] == "fail_joint_violation") for run in res)) / len(res)
+            cfg2stats[cfg_id]["fail_collision_frac"] = float(sum((run["status"] == "fail_collision") for run in res)) / len(res)
+            cfg2stats[cfg_id]["fail_other_frac"] = float(sum((run["status"] == "fail_other") for run in res)) / len(res)
 
             times = np.asarray([float(run["time"]) for run in res])
             cfg2stats[cfg_id]["avg_time"] = np.mean(times[np.isfinite(times)])
@@ -100,8 +104,11 @@ def display_summary(suite, results):
             cfg2stats[cfg_id]["_all_abs_path_lens"] = all_traj_lens
 
             cfg2totals[cfg_id]["solved"] += float(sum(run["success"] for run in res))
+            cfg2totals[cfg_id]["failed_timeout"] += float(sum((run["status"] == "fail_timeout") for run in res))
+            cfg2totals[cfg_id]["failed_joint_violation"] += float(sum((run["status"] == "fail_joint_violation") for run in res))
+            cfg2totals[cfg_id]["failed_collision"] += float(sum((run["status"] == "fail_collision") for run in res))
+            cfg2totals[cfg_id]["failed_other"] += float(sum((run["status"] == "fail_other") for run in res))
             cfg2totals[cfg_id]["time"] += float(sum(times))
-
 
         # for each pset, iterate through all cfgs, and normalize across corresponding path lens
         abs_lens = []
@@ -128,16 +135,20 @@ def display_summary(suite, results):
         print
 
     print "--------OVERALL-----------"
-    fields = ["numsolved","fracsolved", "normed_len", "time"]
+    fields = ["numsolved","fracsolved","fracfailed_timeout", "fracfailed_joint_violation", "fracfailed_collision", "fracfailed_other", "normed_len", "time"]
     row_format ="{:>25}" * (len(fields)+1)    
     print row_format.format("",*fields)
     for (cfg_id, cfg) in enumerate(suite["configurations"]):
         totals = cfg2totals[cfg_id]
         numsolved = totals["solved"]
         fracsolved = totals["solved"] / float(n_probs)
+        fracfailed_timeout = totals["failed_timeout"] / float(n_probs)
+        fracfailed_joint_violation = totals["failed_joint_violation"] / float(n_probs)
+        fracfailed_collision = totals["failed_collision"] / float(n_probs)
+        fracfailed_other = totals["failed_other"] / float(n_probs)
         normed_len = totals["normed_len"] / float(totals["solved"])
         time = totals["time"] / float(n_probs)
-        print row_format.format(cfg["name"], numsolved, fracsolved, normed_len, time)
+        print row_format.format(cfg["name"], numsolved, fracsolved, fracfailed_timeout, fracfailed_joint_violation, fracfailed_collision, fracfailed_other, normed_len, time)
 
 def main():
     if args.summarize is None:

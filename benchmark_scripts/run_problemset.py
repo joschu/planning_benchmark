@@ -91,7 +91,17 @@ class bcolors:
         self.FAIL = ''
         self.ENDC = ''
 
+class PlannerStatus:
+    SUCCESS = 'success'
+    FAIL_TIMEOUT = 'fail_timeout'
+    FAIL_JOINT_VIOLATION = 'fail_joint_violation'
+    FAIL_COLLISION = 'fail_collision'
+    FAIL_OTHER = 'fail_other'
 
+def traj_in_joint_limits(traj, robot):
+    lower, upper = robot.GetActiveDOFLimits()
+    in_limits = (lower[None,:] <= traj) & (traj <= upper[None,:])
+    return in_limits.all()
 def mirror_arm_joints(x):
     "mirror image of joints (r->l or l->r)"
     return [-x[0],x[1],-x[2],x[3],-x[4],x[5],-x[6]]
@@ -283,18 +293,18 @@ def trajopt_plan(robot, group_name, active_joint_names, active_affine, end_joint
         prob.SetRobotActiveDOFs()
         return traj, traj_is_safe(traj, robot) #and (use_discrete_collision or traj_no_self_collisions(traj, robot))
 
-    success = False
+    status = PlannerStatus.FAIL_COLLISION
     msg = ''
     t_start = time()
     for (i_init,inittraj) in enumerate(init_trajs):
         traj, is_safe = single_trial(inittraj, True)
         if is_safe:
             msg = "planning successful after %s initialization"%(i_init+1)
-            success = True
+            status = PlannerStatus.SUCCESS
             break
     t_total = time() - t_start
 
-    return success, t_total, [row.tolist() for row in traj], msg
+    return status, t_total, [row.tolist() for row in traj], msg
 
 def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_values, init_trajs):
     
@@ -338,9 +348,9 @@ def ompl_plan(robot, group_name, active_joint_names, active_affine, target_dof_v
               row += [ros_quat_to_aa(base_trans.rotation)[2]]
             traj.append(row)
         traj = np.asarray(traj)
-        return True, response.planning_time, traj, ''
+        return PlannerStatus.SUCCESS, response.planning_time, traj, ''
     except rospy.service.ServiceException, e:
-        return False, time() - t_start, [], 'failed due to ServiceException: ' + repr(e)
+        return PlannerStatus.FAIL_TIMEOUT, time() - t_start, [], 'failed due to ServiceException: ' + repr(e)
 
 def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_values, init_trajs):
     datadir = 'chomp_data'
@@ -405,7 +415,7 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
     # run chomp
     msg = ''
     t_start = time()
-    is_safe = False
+    status = PlannerStatus.FAIL_COLLISION
     traj = []
     if args.multi_init:
         for i_init, inittraj in enumerate(init_trajs):
@@ -414,12 +424,20 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
                 rave_traj = m_chomp.runchomp(**kwargs)
                 saver.Restore() # set active dofs to original (including affine), needed for traj_to_array
                 traj = traj_to_array(robot, rave_traj)
-                if traj_is_safe(traj, robot):
-                    is_safe = True
+                if not traj_in_joint_limits(traj, robot):
+                    status = PlannerStatus.FAIL_JOINT_VIOLATION
+                elif not traj_is_safe(traj, robot):
+                    status = PlannerStatus.FAIL_COLLISION
+                else:
+                    status = PlannerStatus.SUCCESS
                     msg = "planning successful after %s initialization"%(i_init+1)
                     break
             except Exception, e:
                 msg = "CHOMP failed with exception: %s" % str(e)
+                if 'limit' in msg:
+                    status = PlannerStatus.FAIL_JOINT_VIOLATION
+                else:
+                    status = PlannerStatus.FAIL_OTHER
                 continue
     else:
         kwargs["adofgoal"] = target_dof_values
@@ -427,12 +445,21 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
             rave_traj = m_chomp.runchomp(**kwargs)
             saver.Restore() # set active dofs to original (including affine), needed for traj_to_array
             traj = traj_to_array(robot, rave_traj)
-            is_safe = traj_is_safe(traj, robot)
+            if not traj_in_joint_limits(traj, robot):
+                status = PlannerStatus.FAIL_JOINT_VIOLATION
+            elif not traj_is_safe(traj, robot):
+                status = PlannerStatus.FAIL_COLLISION
+            else:
+                status = PlannerStatus.SUCCESS
         except Exception, e:
             msg = "CHOMP failed with exception: %s" % str(e)
+            if 'limit' in msg:
+                status = PlannerStatus.FAIL_JOINT_VIOLATION
+            else:
+                status = PlannerStatus.FAIL_OTHER
     t_total = time() - t_start
 
-    return is_safe, t_total, traj, msg
+    return status, t_total, traj, msg
 
 
 def init_env(problemset):
@@ -509,9 +536,10 @@ def main():
     for i, (start, goal) in enumerate(problem_joints):
         robot.SetActiveDOFValues(start)
         init_trajs = gen_init_trajs(problemset, robot, args.n_steps, start, goal)
-        success, t_total, traj, msg = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal, init_trajs)
-        print '%s[%d/%d] %s%s' % (bcolors.OKGREEN if success else bcolors.FAIL, i+1, len(problem_joints), ('success' if success else 'FAILURE') + (': ' + msg if msg else ''), bcolors.ENDC)
-        res = {"success": success, "time": t_total}
+        status, t_total, traj, msg = plan_func(robot, problemset["group_name"], problemset["active_joints"], problemset["active_affine"], goal, init_trajs)
+        success = status == PlannerStatus.SUCCESS
+        print '%s[%d/%d] %s%s' % (bcolors.OKGREEN if success else bcolors.FAIL, i+1, len(problem_joints), ('success' if success else 'FAILURE') + (': ' + msg if msg else '') + (' (code: %s)' % status), bcolors.ENDC)
+        res = {"success": success, "status": status, "time": t_total}
         if args.outfile is not sys.stdout:
             res["traj"] = traj
         results.append(res)
