@@ -3,7 +3,7 @@ parser = argparse.ArgumentParser()
 
 g0 = parser.add_argument_group('common', 'Common args')
 g0.add_argument("problemfile",type=argparse.FileType("r"), help="Problem description YAML file")
-g0.add_argument("planner", choices=["trajopt", "ompl", "chomp"], help="Planner to run")
+g0.add_argument("planner", choices=["trajopt", "ompl", "chomp", "chomp2"], help="Planner to run")
 g0.add_argument("-o","--outfile",type=argparse.FileType("w"), help="File to dump results (generated trajectories, timing info, etc.)")
 g0.add_argument("--record_failed_problems", type=argparse.FileType("w"), help="File to save failed start/goal pairs")
 g0.add_argument("--problems", type=argparse.FileType("r"), help="ignore the problems in problemfile and use these only (good for output from --record_failed_problems)")
@@ -187,9 +187,15 @@ def postsetup_trajopt(env):
 
 @fu.once
 def get_chomp_module(env):
-    from orcdchomp import orcdchomp
-    CHOMP_MODULE_PATH = '/home/jonathan/build/chomp/liborcdchomp.so'
-    openravepy.RaveLoadPlugin(CHOMP_MODULE_PATH)
+    if args.planner == "chomp":
+      from orcdchomp import orcdchomp
+      chomp_module_path = "/home/jonathan/build/chomp/liborcdchomp.so"
+    elif args.planner == "chomp2":
+      from orcdchomp2 import orcdchomp
+      chomp_module_path = "/home/jonathan/code/orcdchomp2/lib/liborcdchomp2.so"
+    else:
+      assert False
+    openravepy.RaveLoadPlugin(chomp_module_path)
     m_chomp = openravepy.RaveCreateModule(env, 'orcdchomp')
     env.Add(m_chomp, True, 'blah_load_string')
     orcdchomp.bind(m_chomp)
@@ -413,7 +419,7 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
                     msg = "planning successful after %s initialization"%(i_init+1)
                     break
             except Exception, e:
-                msg = "CHOMP failed with exception: %s" % repr(e)
+                msg = "CHOMP failed with exception: %s" % str(e)
                 continue
     else:
         kwargs["adofgoal"] = target_dof_values
@@ -423,7 +429,7 @@ def chomp_plan(robot, group_name, active_joint_names, active_affine, target_dof_
             traj = traj_to_array(robot, rave_traj)
             is_safe = traj_is_safe(traj, robot)
         except Exception, e:
-            msg = "CHOMP failed with exception: %s" % repr(e)
+            msg = "CHOMP failed with exception: %s" % str(e)
     t_total = time() - t_start
 
     return is_safe, t_total, traj, msg
@@ -443,7 +449,7 @@ def init_env(problemset):
     elif args.planner == "ompl":
         setup_ompl(env)
         plan_func = ompl_plan
-    elif args.planner == "chomp":
+    elif args.planner in ["chomp", "chomp2"]:
         setup_chomp(env)
         plan_func = chomp_plan
         # chomp needs a robot with spheres
